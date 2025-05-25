@@ -31,3 +31,6 @@ pnpm-debug.log*
 .nx/workspace-data
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+
+tmp
