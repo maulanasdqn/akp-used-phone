@@ -1,0 +1,21 @@
+{
+  "name": "my-app",
+  "scripts": {
+    "dev": "bun run --hot src/main.ts",
+    "db:pull": "prisma db pull",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "build": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "@hono/swagger-ui": "^0.5.1",
+    "@hono/trpc-server": "^0.3.4",
+    "hono": "^4.7.10",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^6.8.2"
+  }
+}
