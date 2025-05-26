@@ -21,7 +21,7 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 │   (Customer)    │    │   (Admin)       │    │   (Backend)     │
 │                 │    │                 │    │                 │
 │  React + Vite   │    │  React + Vite   │    │  Hono + tRPC    │
-│  Port: 5173     │    │  Port: 5174     │    │  Port: 3000     │
+│  Port: 4200     │    │  Port: 4201     │    │  Port: 3005     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -40,6 +40,9 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 - **TypeScript** - Type-safe JavaScript
 - **Vite** - Next-generation frontend tooling
 - **tRPC** - End-to-end typesafe APIs
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - High-quality UI components
+- **Radix UI** - Unstyled, accessible UI primitives
 
 ### Backend
 
@@ -105,9 +108,9 @@ bun run db:migrate
 bun run dev
 
 # Or start individual apps
-bun run api:dev      # API server (http://localhost:3000)
-nx serve store       # Customer store (http://localhost:4200)
-nx serve backoffice  # Admin panel (http://localhost:4201)
+bun run api:dev         # API server (http://localhost:3005)
+bun run store:dev       # Customer store (http://localhost:4200)
+bun run backoffice:dev  # Admin panel (http://localhost:4201)
 ```
 
 ## 📁 Project Structure
@@ -115,13 +118,20 @@ nx serve backoffice  # Admin panel (http://localhost:4201)
 ```
 akp-used-phone/
 ├── 📱 apps/
-│   ├── 🛒 store/          # Customer-facing storefront
-│   ├── 🏢 backoffice/     # Admin management panel
-│   └── 🔌 api/            # Backend API server
+│   ├── 🛒 store/          # Customer-facing storefront (React + Vite)
+│   ├── 🏢 backoffice/     # Admin management panel (React + Vite)
+│   └── 🔌 api/            # Backend API server (Hono + tRPC)
 ├── 🔗 shared/
-│   └── trpc/              # Shared tRPC definitions
+│   ├── api/
+│   │   ├── app/           # Shared API application logic
+│   │   ├── database/      # Database utilities and types
+│   │   └── trpc/          # tRPC server definitions
+│   └── web/
+│       ├── components/    # Shared UI components (Tailwind + shadcn/ui)
+│       └── utils/         # Shared web utilities
 ├── 🗃️ prisma/
-│   └── schema.prisma      # Database schema
+│   ├── schema.prisma      # Database schema with RBAC
+│   └── migrations/        # Database migration files
 ├── 📋 package.json        # Project dependencies
 └── 📖 README.md          # You are here! 👋
 ```
@@ -154,14 +164,22 @@ akp-used-phone/
 
 ## 🗃️ Database Schema
 
-### Users (`AppUser`)
+### Users (`AppUsers`)
 
 - Unique email-based authentication
 - Secure password hashing
 - Profile management (firstName, lastName)
+- Role-based access control (roleId)
 - Audit trails (createdAt, updatedAt)
 
-### Products (`AppProduct`)
+### Roles & Permissions (`AppRoles`, `AppPermissions`, `AppRolePermissions`)
+
+- **Roles**: Define user access levels (admin, customer, etc.)
+- **Permissions**: Granular access controls for specific actions
+- **Role Permissions**: Many-to-many relationship between roles and permissions
+- Full RBAC implementation for secure access control
+
+### Products (`AppProducts`)
 
 - Unique SKU and slug identifiers
 - Rich product descriptions
@@ -169,6 +187,7 @@ akp-used-phone/
 - Stock quantity tracking
 - Minimum order quantities
 - Image URL support
+- Creator tracking (createdBy user reference)
 
 ## 🧪 Development Commands
 
@@ -177,29 +196,38 @@ akp-used-phone/
 bun run db:pull      # Pull schema from database
 bun run db:push      # Push schema to database
 bun run db:migrate   # Run database migrations
+bun run db:reset     # Reset database (interactive)
 bun run db:generate  # Generate Prisma client
 
-# API Development
-bun run api:dev      # Start API in development mode
+# Development
+bun run dev          # Start all applications
+bun run api:dev      # Start API server only
+bun run store:dev    # Start store app only
+bun run backoffice:dev # Start backoffice app only
+
+# Building
+bun run build        # Build all applications
 bun run api:build    # Build API for production
+bun run store:build  # Build store for production
+bun run backoffice:build # Build backoffice for production
+
+# Production
 bun run api:prod     # Run production API build
+bun run store:prod   # Preview store production build
+bun run backoffice:prod # Preview backoffice production build
 
-# Testing
-nx test              # Run all tests
-nx test store        # Test specific app
-nx test --coverage   # Run tests with coverage
-
-# Code Quality
-nx lint              # Lint all projects
-nx format            # Format code with Prettier
+# Testing & Quality
+bun run test         # Run all tests
+bun run lint         # Lint all projects
+bun run format       # Format code with Prettier
 ```
 
 ## 🌟 API Documentation
 
 Once the API server is running, visit:
 
-- **Swagger UI**: http://localhost:3000/ui
-- **API Endpoints**: http://localhost:3000/api
+- **Swagger UI**: http://localhost:3005/v1/docs
+- **tRPC Endpoints**: http://localhost:3005/v1/trpc
 
 ## 🤝 Contributing
 
