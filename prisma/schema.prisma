@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../node_modules/@prisma/client/prisma-client"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -8,27 +9,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model AppUser {
-  id        String   @id @default(dbgenerated("ulid_generate()")) @db.Uuid
+model AppUsers {
+  id        String   @id @default(ulid())
   email     String   @unique
   password  String
   firstName String
   lastName  String
+  roleId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  role            AppRoles      @relation(fields: [roleId], references: [id])
+  createdProducts AppProducts[]
 }
 
 
-model AppProduct {
-  id                    String   @id @default(dbgenerated("ulid_generate()")) @db.Uuid
-  sku                   String   @unique
-  slug                  String   @unique
-  name                  String
-  description           String
-  price                 Decimal  @db.Decimal
-  imageUrl              String?
-  stockQuantity         Int
-  minimumOrderQuantity  Int
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+model AppRoles {
+  id        String   @id @default(ulid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users       AppUsers[]
+  permissions AppRolePermissions[]
+}
+
+
+model AppPermissions {
+  id         String   @id @default(ulid())
+  name       String   @unique
+  permission String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  roles AppRolePermissions[]
+}
+
+
+model AppRolePermissions {
+  id           String   @id @default(ulid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  role       AppRoles       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission AppPermissions @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  @@unique([roleId, permissionId])
+}
+
+
+model AppProducts {
+  id                   String   @id @default(ulid())
+  sku                  String   @unique
+  slug                 String   @unique
+  name                 String
+  description          String
+  price                Decimal  @db.Decimal
+  imageUrl             String?
+  stockQuantity        Int
+  minimumOrderQuantity Int
+  createdBy            String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  creator AppUsers @relation(fields: [createdBy], references: [id])
 }
