@@ -6,51 +6,20 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
-        "platform": "node",
         "outputPath": "dist/apps/api",
-        "format": ["cjs"],
-        "bundle": false,
-        "main": "apps/api/src/main.ts",
-        "tsConfig": "apps/api/tsconfig.app.json",
-        "generatePackageJson": true,
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
+        "configFile": "apps/api/vite.config.ts"
       },
-      "configurations": {
-        "development": {},
-        "production": {
-          "esbuildOptions": {
-            "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        }
-      }
+      "dependsOn": ["^build"],
+      "externalDependencies": ["vite"]
     },
     "serve": {
-      "executor": "@nx-bun/nx:serve",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "api:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "api:build:development"
-        },
-        "production": {
-          "buildTarget": "api:build:production"
-        }
+        "command": "bun run apps/api/src/main.ts",
+        "cwd": "."
       }
     }
   }

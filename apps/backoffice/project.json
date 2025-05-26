@@ -4,6 +4,15 @@
   "sourceRoot": "apps/backoffice/src",
   "projectType": "application",
   "tags": [],
-  "// targets": "to see all targets run: nx show project backoffice --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/backoffice",
+        "configFile": "apps/backoffice/vite.config.ts"
+      },
+      "externalDependencies": ["vite"]
+    }
+  }
 }

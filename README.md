@@ -21,7 +21,7 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 │   (Customer)    │    │   (Admin)       │    │   (Backend)     │
 │                 │    │                 │    │                 │
 │  React + Vite   │    │  React + Vite   │    │  Hono + tRPC    │
-│  Port: 4200     │    │  Port: 4201     │    │  Port: 3000     │
+│  Port: 5173     │    │  Port: 5174     │    │  Port: 3000     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -29,8 +29,6 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
                     ┌─────────────────┐
                     │   PostgreSQL    │
                     │   Database      │
-                    │                 │
-                    │  Users & Phones │
                     └─────────────────┘
 ```
 

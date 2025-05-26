@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "develop",
   "targetDefaults": {
     "build": {
       "outputs": ["{projectRoot}/dist"],
@@ -14,7 +15,6 @@
       "inputs": ["default", "^default"]
     }
   },
-  "defaultBase": "develop",
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
@@ -26,14 +26,14 @@
       "plugin": "@nx/vite/plugin",
       "options": {
         "buildTargetName": "build",
-        "testTargetName": "test",
-        "serveTargetName": "serve",
         "devTargetName": "dev",
+        "serveTargetName": "serve",
         "previewTargetName": "preview",
         "serveStaticTargetName": "serve-static",
         "typecheckTargetName": "typecheck",
         "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
+        "watchDepsTargetName": "watch-deps",
+        "testTargetName": "test"
       }
     },
     {
@@ -42,9 +42,9 @@
         "buildTargetName": "build",
         "devTargetName": "dev",
         "startTargetName": "start",
-        "watchDepsTargetName": "watch-deps",
+        "typecheckTargetName": "typecheck",
         "buildDepsTargetName": "build-deps",
-        "typecheckTargetName": "typecheck"
+        "watchDepsTargetName": "watch-deps"
       }
     }
   ],
