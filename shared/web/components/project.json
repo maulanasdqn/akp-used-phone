@@ -1,0 +1,18 @@
+{
+  "name": "components",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared/web/components/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/shared/web/components",
+        "configFile": "shared/web/components/vite.config.ts"
+      },
+      "externalDependencies": ["vite"]
+    }
+  }
+}

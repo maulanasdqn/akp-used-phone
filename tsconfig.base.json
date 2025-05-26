@@ -7,19 +7,16 @@
     "experimentalDecorators": true,
     "target": "esnext",
     "module": "esnext",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/shared/trpc/*": [
-        "shared/trpc/src/*"
-      ]
+      "@/shared/api/database/*": ["shared/api/database/src/*"],
+      "@/shared/api/trpc/*": ["shared/api/trpc/src/*"],
+      "@/shared/web/components/*": ["shared/web/components/src/*"],
+      "@/shared/api/app/*": ["shared/api/app/src/*"],
+      "@/shared/web/utils/*": ["shared/web/utils/src/*"]
     },
-    "types": [
-      "bun-types"
-    ]
+    "types": ["bun-types"]
   }
 }

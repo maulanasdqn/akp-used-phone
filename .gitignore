@@ -32,5 +32,4 @@ pnpm-debug.log*
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
-
-tmp
+generated

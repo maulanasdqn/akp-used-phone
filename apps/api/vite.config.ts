@@ -18,12 +18,11 @@ export default defineConfig({
       fileName: () => 'main.js',
     },
     rollupOptions: {
-      external: [],
+      external: ['@prisma/client/prisma-client'],
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
             const chunks = id.toString().split('node_modules/')[1].split('/');
-
             return chunks[0].startsWith('@')
               ? `${chunks[0].slice(1)}__${chunks[1]}`
               : chunks[0];

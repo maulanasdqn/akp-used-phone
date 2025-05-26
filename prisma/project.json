@@ -1,0 +1,56 @@
+{
+  "name": "prisma",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "prisma",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "prisma": {
+      "command": "prisma",
+      "options": {
+        "cwd": "./"
+      }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "./",
+        "forwardAllArgs": true
+      }
+    },
+    "pull": {
+      "command": "prisma db pull",
+      "options": {
+        "cwd": "./"
+      }
+    },
+    "push": {
+      "command": "prisma db push",
+      "options": {
+        "cwd": "./"
+      }
+    },
+    "reset": {
+      "command": "prisma migrate reset --force",
+      "options": {
+        "cwd": "./",
+        "forwardAllArgs": true
+      }
+    },
+    "generate": {
+      "command": "prisma generate",
+      "options": {
+        "cwd": "./"
+      }
+    },
+    "reset-interactive": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate reset",
+        "cwd": "./",
+        "forwardAllArgs": true
+      }
+    }
+  }
+}

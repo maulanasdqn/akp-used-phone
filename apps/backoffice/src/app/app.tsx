@@ -1,9 +1,9 @@
-import NxWelcome from './nx-welcome';
+import { Button } from '@/shared/web/components/ui/button';
 
 export function App() {
   return (
     <div>
-      <NxWelcome title="backoffice" />
+      <Button>Hello</Button>
     </div>
   );
 }
