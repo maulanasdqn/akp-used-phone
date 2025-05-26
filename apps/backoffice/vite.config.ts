@@ -8,18 +8,14 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/backoffice',
   server: {
-    port: 4200,
+    port: 5174,
     host: 'localhost',
   },
   preview: {
-    port: 4300,
+    port: 5174,
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
   build: {
     outDir: '../../dist/apps/backoffice',
     emptyOutDir: true,

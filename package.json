@@ -1,14 +1,23 @@
 {
   "name": "akp-used-phone",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
   "scripts": {
-    "api:dev": "bun run --watch apps/api/src/main.ts",
+    "api:dev": "nx serve api",
     "api:build": "nx build api",
-    "api:prod": "bun run --watch dist/apps/api/main.js",
+    "api:prod": "bun run dist/apps/api/main.js",
+    "store:dev": "nx dev store",
+    "backoffice:dev": "nx dev backoffice",
+    "dev": "nx run-many --target=serve --all",
+    "test": "nx run-many --target=test --all",
+    "lint": "nx run-many --target=lint --all",
+    "build": "nx run-many --target=build --all",
+    "format": "nx run-many --target=format --all",
     "db:pull": "prisma db pull",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
-    "build": "bun run src/index.ts"
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.5.1",
@@ -21,7 +30,6 @@
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "@nx-bun/nx": "^1.2.0",
-    "@nx/esbuild": "^21.1.2",
     "@nx/eslint": "21.1.2",
     "@nx/eslint-plugin": "21.1.2",
     "@nx/js": "^21.1.2",
@@ -54,11 +62,10 @@
     "nx": "^21.1.2",
     "prettier": "^2.6.2",
     "prisma": "^6.8.2",
-    "tslib": "^2.3.0",
+    "tslib": "^2.8.1",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
-    "vite": "^6.0.0",
+    "vite": "^6.3.5",
     "vitest": "^3.0.0"
-  },
-  "nx": {}
+  }
 }
