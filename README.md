@@ -21,7 +21,7 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 │   (Customer)    │    │   (Admin)       │    │   (Backend)     │
 │                 │    │                 │    │                 │
 │  React + Vite   │    │  React + Vite   │    │  Hono + tRPC    │
-│  Port: 4200     │    │  Port: 4201     │    │  Port: 3005     │
+│  Port: 5173     │    │  Port: 5174     │    │  Port: 3002     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -42,7 +42,6 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 - **tRPC** - End-to-end typesafe APIs
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - High-quality UI components
-- **Radix UI** - Unstyled, accessible UI primitives
 
 ### Backend
 
@@ -226,8 +225,8 @@ bun run format       # Format code with Prettier
 
 Once the API server is running, visit:
 
-- **Swagger UI**: http://localhost:3005/v1/docs
-- **tRPC Endpoints**: http://localhost:3005/v1/trpc
+- **Swagger UI**: http://localhost:3002/v1/docs
+- **tRPC Endpoints**: http://localhost:3002/v1/trpc
 
 ## 🤝 Contributing
 

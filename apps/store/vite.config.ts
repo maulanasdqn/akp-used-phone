@@ -8,11 +8,11 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/store',
   server: {
-    port: 5173,
+    port: parseInt(process.env.STORE_PORT ?? '5173') ?? 5173,
     host: 'localhost',
   },
   preview: {
-    port: 5173,
+    port: parseInt(process.env.STORE_PORT ?? '5173') ?? 5173,
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],

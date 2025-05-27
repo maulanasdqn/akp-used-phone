@@ -8,11 +8,11 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/backoffice',
   server: {
-    port: 5174,
+    port: parseInt(process.env.STORE_PORT ?? '5174') ?? 5174,
     host: 'localhost',
   },
   preview: {
-    port: 5174,
+    port: parseInt(process.env.STORE_PORT ?? '5174') ?? 5174,
     host: 'localhost',
   },
   plugins: [react(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],

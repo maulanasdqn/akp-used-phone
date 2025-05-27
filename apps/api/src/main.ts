@@ -19,7 +19,7 @@ v1.route('/trpc', trpc);
 app.route('/v1', v1);
 
 Bun.serve({
-  port: 3005,
+  port: process.env.API_PORT ?? 3000,
   fetch: app.fetch,
 });
 

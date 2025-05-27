@@ -5,9 +5,6 @@ export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/api',
   plugins: [nxViteTsPaths()],
-  server: {
-    port: 3002,
-  },
   build: {
     outDir: '../../dist/apps/api',
     emptyOutDir: true,
