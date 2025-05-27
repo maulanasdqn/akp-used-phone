@@ -13,6 +13,13 @@
         "configFile": "shared/api/database/vite.config.ts"
       },
       "externalDependencies": ["vite"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["shared/api/database/**/*.{ts,tsx,js,jsx}"]
+      }
     }
   }
 }

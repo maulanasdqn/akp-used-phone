@@ -13,6 +13,13 @@
         "configFile": "shared/web/components/vite.config.ts"
       },
       "externalDependencies": ["vite"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["shared/web/components/**/*.{ts,tsx,js,jsx}"]
+      }
     }
   }
 }
