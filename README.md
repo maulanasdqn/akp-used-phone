@@ -12,6 +12,8 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 - 🎯 **Type-Safe**: End-to-end type safety with tRPC and TypeScript
 - ⚡ **Lightning Fast**: Built with Bun runtime and Vite for blazing performance
 - 🗃️ **Modern Database**: PostgreSQL with Prisma ORM for reliable data management
+- 🔐 **Role-Based Access Control**: Complete RBAC system with permissions and roles
+- 🌱 **Database Seeding**: Pre-configured sample data for quick development
 
 ## 🏗️ Architecture Overview
 
@@ -21,7 +23,7 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 │   (Customer)    │    │   (Admin)       │    │   (Backend)     │
 │                 │    │                 │    │                 │
 │  React + Vite   │    │  React + Vite   │    │  Hono + tRPC    │
-│  Port: 5173     │    │  Port: 5174     │    │  Port: 3002     │
+│  Port: 5173     │    │  Port: 5174     │    │  Port: 3000     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          └───────────────────────┼───────────────────────┘
@@ -49,7 +51,8 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 - **Hono** - Lightweight web framework
 - **tRPC** - Type-safe API layer
 - **Zod** - Schema validation
-- **Swagger UI** - API documentation
+- **Argon2** - Secure password hashing
+- **JWT** - JSON Web Token authentication
 
 ### Database & ORM
 
@@ -63,6 +66,7 @@ Welcome to the **AKP Used Phone Marketplace** - a modern, full-stack e-commerce 
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Vitest** - Unit testing framework
+- **Husky** - Git hooks
 
 ## 🚀 Quick Start
 
@@ -87,6 +91,16 @@ cp .env.example .env
 # Edit .env with your database credentials
 ```
 
+Required environment variables:
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/akp_used_phone"
+API_PORT=3000
+STORE_PORT=5173
+BACKOFFICE_PORT=5174
+JWT_SECRET="your-jwt-secret-key"
+```
+
 ### 3. Database Setup
 
 ```bash
@@ -95,6 +109,9 @@ bun run db:generate
 
 # Push schema to database
 bun run db:push
+
+# Run database seeding (creates sample data)
+bun run db:seed
 
 # Or run migrations (for production)
 bun run db:migrate
@@ -107,9 +124,9 @@ bun run db:migrate
 bun run dev
 
 # Or start individual apps
-bun run api:dev         # API server (http://localhost:3005)
-bun run store:dev       # Customer store (http://localhost:4200)
-bun run backoffice:dev  # Admin panel (http://localhost:4201)
+bun run api:dev         # API server (http://localhost:3000)
+bun run store:dev       # Customer store (http://localhost:5173)
+bun run backoffice:dev  # Admin panel (http://localhost:5174)
 ```
 
 ## 📁 Project Structure
@@ -117,22 +134,49 @@ bun run backoffice:dev  # Admin panel (http://localhost:4201)
 ```
 akp-used-phone/
 ├── 📱 apps/
-│   ├── 🛒 store/          # Customer-facing storefront (React + Vite)
-│   ├── 🏢 backoffice/     # Admin management panel (React + Vite)
-│   └── 🔌 api/            # Backend API server (Hono + tRPC)
+│   ├── 🛒 store/              # Customer-facing storefront (React + Vite)
+│   │   ├── src/
+│   │   │   ├── app/           # Main application components
+│   │   │   ├── global.css     # Global styles
+│   │   │   └── main.tsx       # Application entry point
+│   │   ├── vite.config.ts     # Vite configuration (Port: 5173)
+│   │   └── project.json       # Nx project configuration
+│   ├── 🏢 backoffice/         # Admin management panel (React + Vite)
+│   │   ├── src/
+│   │   │   ├── app/           # Admin application components
+│   │   │   ├── global.css     # Global styles
+│   │   │   └── main.tsx       # Application entry point
+│   │   ├── vite.config.ts     # Vite configuration (Port: 5174)
+│   │   └── project.json       # Nx project configuration
+│   └── 🔌 api/                # Backend API server (Hono + tRPC)
+│       ├── src/
+│       │   ├── main.ts        # Server entry point (Port: 3000)
+│       │   └── middleware/    # Authentication, logging, tRPC middleware
+│       ├── vite.config.ts     # Build configuration
+│       └── project.json       # Nx project configuration
 ├── 🔗 shared/
 │   ├── api/
-│   │   ├── app/           # Shared API application logic
-│   │   ├── database/      # Database utilities and types
-│   │   └── trpc/          # tRPC server definitions
+│   │   ├── app/               # Shared API application logic
+│   │   │   └── src/v1/        # API v1 routes and services
+│   │   │       ├── iam/       # Identity & Access Management
+│   │   │       │   ├── auth/  # Authentication services
+│   │   │       │   ├── users/ # User management
+│   │   │       │   ├── roles/ # Role management
+│   │   │       │   └── permissions/ # Permission management
+│   │   │       └── products/  # Product management
+│   │   ├── database/          # Database utilities and Prisma client
+│   │   ├── trpc/              # tRPC server definitions
+│   │   └── utils/             # Shared utilities (JWT, password hashing)
 │   └── web/
-│       ├── components/    # Shared UI components (Tailwind + shadcn/ui)
-│       └── utils/         # Shared web utilities
+│       ├── components/        # Shared UI components (Tailwind + shadcn/ui)
+│       └── utils/             # Shared web utilities
 ├── 🗃️ prisma/
-│   ├── schema.prisma      # Database schema with RBAC
-│   └── migrations/        # Database migration files
-├── 📋 package.json        # Project dependencies
-└── 📖 README.md          # You are here! 👋
+│   ├── schema.prisma          # Database schema with RBAC
+│   ├── seed.ts                # Database seeding script
+│   └── migrations/            # Database migration files
+├── 📋 package.json            # Project dependencies and scripts
+├── 🔧 nx.json                 # Nx workspace configuration
+└── 📖 README.md              # You are here! 👋
 ```
 
 ## 🎯 Key Features
@@ -148,45 +192,90 @@ akp-used-phone/
 ### 🏢 Admin Backoffice
 
 - Inventory management
-- User management
+- User management with role-based access
 - Order processing
 - Analytics dashboard
 - Product catalog management
 
 ### 🔌 API Features
 
-- RESTful endpoints with Swagger documentation
+- RESTful endpoints with tRPC
 - JWT-based authentication
 - Input validation with Zod schemas
 - Type-safe database operations
 - Comprehensive error handling
+- Role-based access control (RBAC)
 
 ## 🗃️ Database Schema
 
 ### Users (`AppUsers`)
 
-- Unique email-based authentication
-- Secure password hashing
-- Profile management (firstName, lastName)
-- Role-based access control (roleId)
-- Audit trails (createdAt, updatedAt)
+- **ULID-based IDs** for unique identification
+- **Email-based authentication** with unique constraints
+- **Secure password hashing** using Argon2
+- **Profile management** (firstName, lastName)
+- **Role-based access control** (roleId foreign key)
+- **Audit trails** (createdAt, updatedAt)
 
 ### Roles & Permissions (`AppRoles`, `AppPermissions`, `AppRolePermissions`)
 
-- **Roles**: Define user access levels (admin, customer, etc.)
+- **Roles**: Define user access levels (admin, manager, user)
 - **Permissions**: Granular access controls for specific actions
 - **Role Permissions**: Many-to-many relationship between roles and permissions
-- Full RBAC implementation for secure access control
+- **Full RBAC implementation** for secure access control
 
 ### Products (`AppProducts`)
 
-- Unique SKU and slug identifiers
-- Rich product descriptions
-- Decimal pricing for accuracy
-- Stock quantity tracking
-- Minimum order quantities
-- Image URL support
-- Creator tracking (createdBy user reference)
+- **Unique SKU and slug** identifiers for inventory management
+- **Rich product descriptions** with detailed specifications
+- **Decimal pricing** for accurate financial calculations
+- **Stock quantity tracking** with minimum order quantities
+- **Image URL support** for product photos
+- **Creator tracking** (createdBy user reference)
+- **Audit trails** (createdAt, updatedAt)
+
+## 🌱 Database Seeding
+
+The project includes a comprehensive seeding system that creates sample data for development:
+
+### Default Roles Created:
+
+- **Admin**: Full system access with all permissions
+- **Manager**: Product and user management permissions
+- **User**: Basic product read permissions
+
+### Default Permissions:
+
+- `users.read` - Read users
+- `users.write` - Create and update users
+- `users.delete` - Delete users
+- `products.read` - Read products
+- `products.write` - Create and update products
+- `products.delete` - Delete products
+- `admin.access` - Access admin panel
+
+### Sample Users Created:
+
+- **Admin User**: `admin@example.com` / `admin123`
+- **Manager User**: `manager@example.com` / `manager123`
+- **Regular User**: `user@example.com` / `user123`
+- **Test Users**:
+  - `john.doe@example.com` / `password123`
+  - `jane.smith@example.com` / `password123`
+
+### Sample Products:
+
+- **iPhone 14 128GB Black** - Rp 12,500,000
+- **Samsung Galaxy S23 256GB White** - Rp 11,000,000
+- **Xiaomi 13 128GB Blue** - Rp 7,500,000
+- **OPPO Reno8 128GB Gold** - Rp 5,500,000
+- **Vivo V27 256GB Purple** - Rp 6,200,000
+
+Run seeding with:
+
+```bash
+bun run db:seed
+```
 
 ## 🧪 Development Commands
 
@@ -197,12 +286,13 @@ bun run db:push      # Push schema to database
 bun run db:migrate   # Run database migrations
 bun run db:reset     # Reset database (interactive)
 bun run db:generate  # Generate Prisma client
+bun run db:seed      # Seed database with sample data
 
 # Development
 bun run dev          # Start all applications
-bun run api:dev      # Start API server only
-bun run store:dev    # Start store app only
-bun run backoffice:dev # Start backoffice app only
+bun run api:dev      # Start API server only (Port: 3000)
+bun run store:dev    # Start store app only (Port: 5173)
+bun run backoffice:dev # Start backoffice app only (Port: 5174)
 
 # Building
 bun run build        # Build all applications
@@ -225,8 +315,51 @@ bun run format       # Format code with Prettier
 
 Once the API server is running, visit:
 
-- **Swagger UI**: http://localhost:3002/v1/docs
-- **tRPC Endpoints**: http://localhost:3002/v1/trpc
+- **tRPC Endpoints**: http://localhost:3000/v1/trpc
+
+### Available API Routes:
+
+#### Authentication (`/v1/trpc/auth`)
+
+- User registration and login
+- JWT token management
+- Password reset functionality
+
+#### Users (`/v1/trpc/users`)
+
+- User profile management
+- Role assignment (admin only)
+- User listing with pagination
+
+#### Products (`/v1/trpc/products`)
+
+- Product CRUD operations
+- Inventory management
+- Product search and filtering
+
+#### Roles & Permissions (`/v1/trpc/roles`, `/v1/trpc/permissions`)
+
+- Role management
+- Permission assignment
+- Access control configuration
+
+## 🔐 Authentication & Authorization
+
+The system implements a comprehensive RBAC (Role-Based Access Control) system:
+
+### Authentication Flow:
+
+1. User registers/logs in with email and password
+2. Server validates credentials and returns JWT token
+3. Client includes JWT token in subsequent requests
+4. Server validates token and extracts user information
+
+### Authorization Levels:
+
+- **Public**: Product browsing, user registration
+- **User**: Profile management, order placement
+- **Manager**: Product management, user management
+- **Admin**: Full system access, role management
 
 ## 🤝 Contributing
 
@@ -244,6 +377,7 @@ We love contributions! Here's how to get started:
 - Write tests for new features
 - Use conventional commit messages
 - Ensure all lints pass before submitting
+- Update documentation for new features
 
 ## 📄 License
 
@@ -256,6 +390,31 @@ Having trouble? We're here to help!
 - 📧 **Email**: support@akp-phones.com
 - 🐛 **Issues**: [GitHub Issues](../../issues)
 - 💬 **Discussions**: [GitHub Discussions](../../discussions)
+
+## 🚀 Deployment
+
+### Environment Variables for Production:
+
+```env
+DATABASE_URL="postgresql://username:password@host:port/database"
+API_PORT=3000
+JWT_SECRET="your-secure-jwt-secret"
+NODE_ENV="production"
+```
+
+### Build for Production:
+
+```bash
+# Build all applications
+bun run build
+
+# Run API in production
+bun run api:prod
+
+# Serve frontend applications
+bun run store:prod
+bun run backoffice:prod
+```
 
 ---
 
