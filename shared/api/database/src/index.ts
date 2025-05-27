@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client/prisma-client';
+import { PrismaClient } from '@prisma/client';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -16,9 +16,9 @@ if (process.env['NODE_ENV'] !== 'production') {
 
 export { PrismaClient };
 export type {
-  AppUsers,
-  AppRoles,
-  AppPermissions,
-  AppRolePermissions,
-  AppProducts,
-} from '@prisma/client/prisma-client';
+  User,
+  Role,
+  Permission,
+  RolePermission,
+  Product,
+} from '@prisma/client';

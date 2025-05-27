@@ -8,10 +8,7 @@ export const permissionSchema = z.object({
     .string({ required_error: 'Permission name is required' })
     .min(1, { message: 'Permission name cannot be empty' })
     .max(100, { message: 'Permission name cannot exceed 100 characters' }),
-  permission: z
-    .string({ required_error: 'Permission value is required' })
-    .min(1, { message: 'Permission value cannot be empty' })
-    .max(200, { message: 'Permission value cannot exceed 200 characters' }),
+
   createdAt: z.date({ required_error: 'Created date is required' }),
   updatedAt: z.date({ required_error: 'Updated date is required' }),
 });
@@ -21,10 +18,6 @@ export const createPermissionSchema = z.object({
     .string({ required_error: 'Permission name is required' })
     .min(1, { message: 'Permission name cannot be empty' })
     .max(100, { message: 'Permission name cannot exceed 100 characters' }),
-  permission: z
-    .string({ required_error: 'Permission value is required' })
-    .min(1, { message: 'Permission value cannot be empty' })
-    .max(200, { message: 'Permission value cannot exceed 200 characters' }),
 });
 
 export const updatePermissionSchema = z.object({
@@ -36,11 +29,6 @@ export const updatePermissionSchema = z.object({
     .min(1, { message: 'Permission name cannot be empty' })
     .max(100, { message: 'Permission name cannot exceed 100 characters' })
     .optional(),
-  permission: z
-    .string()
-    .min(1, { message: 'Permission value cannot be empty' })
-    .max(200, { message: 'Permission value cannot exceed 200 characters' })
-    .optional(),
 });
 
 export const partialUpdatePermissionSchema = z.object({
@@ -49,11 +37,6 @@ export const partialUpdatePermissionSchema = z.object({
     .min(1, { message: 'Permission name cannot be empty' })
     .max(100, { message: 'Permission name cannot exceed 100 characters' })
     .optional(),
-  permission: z
-    .string()
-    .min(1, { message: 'Permission value cannot be empty' })
-    .max(200, { message: 'Permission value cannot exceed 200 characters' })
-    .optional(),
 });
 
 export const permissionResponseSchema = z.object({
@@ -61,7 +44,7 @@ export const permissionResponseSchema = z.object({
     .string({ required_error: 'Permission ID is required' })
     .ulid({ message: 'Invalid permission ID format' }),
   name: z.string({ required_error: 'Permission name is required' }),
-  permission: z.string({ required_error: 'Permission value is required' }),
+
   createdAt: z.date({ required_error: 'Created date is required' }),
   updatedAt: z.date({ required_error: 'Updated date is required' }),
 });

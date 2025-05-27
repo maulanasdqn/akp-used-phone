@@ -1,5 +1,5 @@
-import { commonService } from '../iam/common/common-service';
-import { TMetaRequest, TResponseList } from '../iam/common/common-dto';
+import { commonService } from '../common/common-service';
+import { TMetaRequest, TResponseList } from '../common/common-dto';
 import type {
   TRequestCreateProduct,
   TRequestUpdateProduct,
@@ -9,14 +9,13 @@ import type {
   TResponseProduct,
   TResponseProductWithCreator,
 } from './products-dto';
+import { PrismaClient } from '@prisma/client';
 
-export const productsRepository = () => {
+export const productsRepository = (prisma: PrismaClient) => {
   return {
     getAll: async (
       query: TRequestProductQuery
     ): Promise<TResponseList<TResponseProductWithCreator>> => {
-      const { prisma } = await import('@/shared/api/database');
-
       const {
         search,
         createdBy,
@@ -56,7 +55,7 @@ export const productsRepository = () => {
       };
 
       const [products, total] = await Promise.all([
-        prisma.appProducts.findMany({
+        prisma.product.findMany({
           where,
           skip,
           take,
@@ -66,13 +65,12 @@ export const productsRepository = () => {
               select: {
                 id: true,
                 email: true,
-                firstName: true,
-                lastName: true,
+                name: true,
               },
             },
           },
         }),
-        prisma.appProducts.count({ where }),
+        prisma.product.count({ where }),
       ]);
 
       const mappedProducts = products.map(
@@ -92,8 +90,7 @@ export const productsRepository = () => {
           creator: {
             id: product.creator.id,
             email: product.creator.email,
-            firstName: product.creator.firstName,
-            lastName: product.creator.lastName,
+            name: product.creator.name,
           },
         })
       );
@@ -104,17 +101,14 @@ export const productsRepository = () => {
     getById: async (
       id: string
     ): Promise<TResponseProductWithCreator | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findUnique({
+      const product = await prisma.product.findUnique({
         where: { id },
         include: {
           creator: {
             select: {
               id: true,
               email: true,
-              firstName: true,
-              lastName: true,
+              name: true,
             },
           },
         },
@@ -140,8 +134,7 @@ export const productsRepository = () => {
         creator: {
           id: product.creator.id,
           email: product.creator.email,
-          firstName: product.creator.firstName,
-          lastName: product.creator.lastName,
+          name: product.creator.name,
         },
       };
     },
@@ -149,9 +142,7 @@ export const productsRepository = () => {
     getBySku: async (
       sku: string
     ): Promise<TProductItem | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findFirst({
+      const product = await prisma.product.findFirst({
         where: { sku },
       });
 
@@ -178,17 +169,14 @@ export const productsRepository = () => {
     getBySlug: async (
       slug: string
     ): Promise<TResponseProductWithCreator | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findFirst({
+      const product = await prisma.product.findFirst({
         where: { slug },
         include: {
           creator: {
             select: {
               id: true,
               email: true,
-              firstName: true,
-              lastName: true,
+              name: true,
             },
           },
         },
@@ -214,16 +202,13 @@ export const productsRepository = () => {
         creator: {
           id: product.creator.id,
           email: product.creator.email,
-          firstName: product.creator.firstName,
-          lastName: product.creator.lastName,
+          name: product.creator.name,
         },
       };
     },
 
     create: async (data: TRequestCreateProduct): Promise<TResponseProduct> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.create({
+      const product = await prisma.product.create({
         data: {
           sku: data.sku,
           slug: data.slug,
@@ -257,9 +242,7 @@ export const productsRepository = () => {
       data: TRequestUpdateProduct
     ): Promise<TResponseProduct | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-
-        const product = await prisma.appProducts.update({
+        const product = await prisma.product.update({
           where: { id: data.id },
           data: {
             ...(data.sku && { sku: data.sku }),
@@ -297,14 +280,11 @@ export const productsRepository = () => {
     },
 
     partialUpdate: async (
-      id: string,
       data: TRequestPartialUpdateProduct
     ): Promise<TResponseProduct | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-
-        const product = await prisma.appProducts.update({
-          where: { id },
+        const product = await prisma.product.update({
+          where: { id: data.id },
           data: {
             ...(data.sku && { sku: data.sku }),
             ...(data.slug && { slug: data.slug }),
@@ -342,9 +322,7 @@ export const productsRepository = () => {
 
     delete: async (id: string): Promise<{ message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-
-        await prisma.appProducts.delete({
+        await prisma.product.delete({
           where: { id },
         });
         return { message: 'Product deleted successfully' };
@@ -354,9 +332,7 @@ export const productsRepository = () => {
     },
 
     exists: async (id: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findUnique({
+      const product = await prisma.product.findUnique({
         where: { id },
         select: { id: true },
       });
@@ -364,9 +340,7 @@ export const productsRepository = () => {
     },
 
     existsBySku: async (sku: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findFirst({
+      const product = await prisma.product.findFirst({
         where: { sku },
         select: { id: true },
       });
@@ -374,9 +348,7 @@ export const productsRepository = () => {
     },
 
     existsBySlug: async (slug: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-
-      const product = await prisma.appProducts.findFirst({
+      const product = await prisma.product.findFirst({
         where: { slug },
         select: { id: true },
       });
@@ -388,9 +360,7 @@ export const productsRepository = () => {
       stockQuantity: number
     ): Promise<{ message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-
-        await prisma.appProducts.update({
+        await prisma.product.update({
           where: { id },
           data: { stockQuantity },
         });
@@ -404,8 +374,6 @@ export const productsRepository = () => {
       createdBy: string,
       query: TRequestProductQuery
     ): Promise<TResponseList<TResponseProduct>> => {
-      const { prisma } = await import('@/shared/api/database');
-
       const { search, sortBy, sortOrder } = query;
 
       const metaRequest: TMetaRequest = {
@@ -430,13 +398,13 @@ export const productsRepository = () => {
       };
 
       const [products, total] = await Promise.all([
-        prisma.appProducts.findMany({
+        prisma.product.findMany({
           where,
           skip,
           take,
           orderBy: { [sortBy]: sortOrder },
         }),
-        prisma.appProducts.count({ where }),
+        prisma.product.count({ where }),
       ]);
 
       const mappedProducts = products.map(

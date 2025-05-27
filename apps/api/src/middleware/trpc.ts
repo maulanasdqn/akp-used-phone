@@ -1,13 +1,16 @@
-import { Hono } from 'hono';
 import { trpcServer } from '@hono/trpc-server';
-import { appRouter, createContext } from '@/shared/api/trpc';
+import { createTRPCContext } from '@/shared/api/utils';
+import { appRouter } from '@/shared/trpc';
+import type { Context } from 'hono';
 
 export const trpcMiddleware = () => {
-  const app = new Hono();
   const trpc = trpcServer({
     router: appRouter,
-    createContext,
+    createContext: async (_opts, c: Context) => {
+      const context = await createTRPCContext({ headers: c.req.raw.headers });
+      return context as unknown as Record<string, unknown>;
+    },
+    endpoint: '/v1/trpc',
   });
-  app.use('', trpc);
-  return app;
+  return trpc;
 };

@@ -1,5 +1,5 @@
-import { commonService } from '../common/common-service';
-import { TMetaRequest, TResponseList } from '../common/common-dto';
+import { commonService } from '../../common/common-service';
+import { TMetaRequest, TResponseList } from '../../common/common-dto';
 import type {
   TRequestCreatePermission,
   TRequestUpdatePermission,
@@ -8,13 +8,13 @@ import type {
   TPermissionItem,
   TResponsePermission,
 } from './permissions-dto';
+import { PrismaClient } from '@prisma/client';
 
-export const permissionsRepository = () => {
+export const permissionsRepository = (prisma: PrismaClient) => {
   return {
     getAll: async (
       query: TRequestPermissionQuery
     ): Promise<TResponseList<TResponsePermission>> => {
-      const { prisma } = await import('@/shared/api/database');
       const { search, sortBy, sortOrder } = query;
 
       const metaRequest: TMetaRequest = {
@@ -37,20 +37,19 @@ export const permissionsRepository = () => {
       };
 
       const [permissions, total] = await Promise.all([
-        prisma.appPermissions.findMany({
+        prisma.permission.findMany({
           where,
           skip,
           take,
           orderBy: { [sortBy]: sortOrder },
         }),
-        prisma.appPermissions.count({ where }),
+        prisma.permission.count({ where }),
       ]);
 
       const mappedPermissions = permissions.map(
         (permission): TResponsePermission => ({
           id: permission.id,
           name: permission.name,
-          permission: permission.permission,
           createdAt: permission.createdAt,
           updatedAt: permission.updatedAt,
         })
@@ -62,8 +61,7 @@ export const permissionsRepository = () => {
     getById: async (
       id: string
     ): Promise<TResponsePermission | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const permission = await prisma.appPermissions.findUnique({
+      const permission = await prisma.permission.findUnique({
         where: { id },
       });
 
@@ -74,7 +72,7 @@ export const permissionsRepository = () => {
       return {
         id: permission.id,
         name: permission.name,
-        permission: permission.permission,
+
         createdAt: permission.createdAt,
         updatedAt: permission.updatedAt,
       };
@@ -83,8 +81,7 @@ export const permissionsRepository = () => {
     getByName: async (
       name: string
     ): Promise<TPermissionItem | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const permission = await prisma.appPermissions.findFirst({
+      const permission = await prisma.permission.findFirst({
         where: { name },
       });
 
@@ -95,7 +92,7 @@ export const permissionsRepository = () => {
       return {
         id: permission.id,
         name: permission.name,
-        permission: permission.permission,
+
         createdAt: permission.createdAt,
         updatedAt: permission.updatedAt,
       };
@@ -104,18 +101,15 @@ export const permissionsRepository = () => {
     create: async (
       data: TRequestCreatePermission
     ): Promise<TResponsePermission> => {
-      const { prisma } = await import('@/shared/api/database');
-      const permission = await prisma.appPermissions.create({
+      const permission = await prisma.permission.create({
         data: {
           name: data.name,
-          permission: data.permission,
         },
       });
 
       return {
         id: permission.id,
         name: permission.name,
-        permission: permission.permission,
         createdAt: permission.createdAt,
         updatedAt: permission.updatedAt,
       };
@@ -125,19 +119,17 @@ export const permissionsRepository = () => {
       data: TRequestUpdatePermission
     ): Promise<TResponsePermission | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const permission = await prisma.appPermissions.update({
+        const permission = await prisma.permission.update({
           where: { id: data.id },
           data: {
             ...(data.name && { name: data.name }),
-            ...(data.permission && { permission: data.permission }),
           },
         });
 
         return {
           id: permission.id,
           name: permission.name,
-          permission: permission.permission,
+
           createdAt: permission.createdAt,
           updatedAt: permission.updatedAt,
         };
@@ -151,19 +143,17 @@ export const permissionsRepository = () => {
       data: TRequestPartialUpdatePermission
     ): Promise<TResponsePermission | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const permission = await prisma.appPermissions.update({
+        const permission = await prisma.permission.update({
           where: { id },
           data: {
             ...(data.name && { name: data.name }),
-            ...(data.permission && { permission: data.permission }),
           },
         });
 
         return {
           id: permission.id,
           name: permission.name,
-          permission: permission.permission,
+
           createdAt: permission.createdAt,
           updatedAt: permission.updatedAt,
         };
@@ -174,9 +164,7 @@ export const permissionsRepository = () => {
 
     delete: async (id: string): Promise<{ message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        // Check if permission is being used by any roles
-        const rolesWithPermission = await prisma.appRolePermissions.count({
+        const rolesWithPermission = await prisma.rolePermission.count({
           where: { permissionId: id },
         });
 
@@ -186,7 +174,7 @@ export const permissionsRepository = () => {
           };
         }
 
-        await prisma.appPermissions.delete({
+        await prisma.permission.delete({
           where: { id },
         });
         return { message: 'Permission deleted successfully' };
@@ -196,8 +184,7 @@ export const permissionsRepository = () => {
     },
 
     exists: async (id: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const permission = await prisma.appPermissions.findUnique({
+      const permission = await prisma.permission.findUnique({
         where: { id },
         select: { id: true },
       });
@@ -205,8 +192,7 @@ export const permissionsRepository = () => {
     },
 
     existsByName: async (name: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const permission = await prisma.appPermissions.findFirst({
+      const permission = await prisma.permission.findFirst({
         where: { name },
         select: { id: true },
       });
@@ -214,8 +200,7 @@ export const permissionsRepository = () => {
     },
 
     getRolesCount: async (id: string): Promise<number> => {
-      const { prisma } = await import('@/shared/api/database');
-      return await prisma.appRolePermissions.count({
+      return await prisma.rolePermission.count({
         where: { permissionId: id },
       });
     },

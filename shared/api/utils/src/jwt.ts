@@ -15,9 +15,6 @@ export interface TokenPair {
 const JWT_SECRET = process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key';
 const JWT_REFRESH_SECRET =
   process.env['JWT_REFRESH_SECRET'] ?? 'your-super-secret-refresh-key';
-const ACCESS_TOKEN_EXPIRES_IN = process.env['ACCESS_TOKEN_EXPIRES_IN'] ?? '15m';
-const REFRESH_TOKEN_EXPIRES_IN =
-  process.env['REFRESH_TOKEN_EXPIRES_IN'] ?? '7d';
 
 /**
  * Generate access and refresh tokens for a user
@@ -28,10 +25,10 @@ export function generateTokens(payload: {
   roleId: string;
 }): TokenPair {
   const accessTokenOptions: SignOptions = {
-    expiresIn: Number(ACCESS_TOKEN_EXPIRES_IN),
+    expiresIn: 15 * 60,
   };
   const refreshTokenOptions: SignOptions = {
-    expiresIn: Number(REFRESH_TOKEN_EXPIRES_IN),
+    expiresIn: 10 * 24 * 60 * 60,
   };
   const accessToken = jwt.sign(payload, JWT_SECRET, accessTokenOptions);
   const refreshToken = jwt.sign(
@@ -92,7 +89,7 @@ export function refreshAccessToken(refreshToken: string): string {
     roleId: decoded.roleId,
   };
   const options: SignOptions = {
-    expiresIn: Number(ACCESS_TOKEN_EXPIRES_IN),
+    expiresIn: 15 * 60,
   };
   return jwt.sign(payload, JWT_SECRET, options);
 }

@@ -130,6 +130,9 @@ export const updateProductSchema = z.object({
 });
 
 export const partialUpdateProductSchema = z.object({
+  id: z
+    .string({ required_error: 'Product ID is required' })
+    .ulid({ message: 'Invalid product ID format' }),
   sku: z
     .string()
     .min(1, { message: 'SKU cannot be empty' })
@@ -195,8 +198,7 @@ export const productWithCreatorSchema = productResponseSchema.extend({
   creator: z.object({
     id: z.string({ required_error: 'Creator ID is required' }),
     email: z.string({ required_error: 'Creator email is required' }),
-    firstName: z.string({ required_error: 'Creator first name is required' }),
-    lastName: z.string({ required_error: 'Creator last name is required' }),
+    name: z.string({ required_error: 'Creator name is required' }),
   }),
 });
 

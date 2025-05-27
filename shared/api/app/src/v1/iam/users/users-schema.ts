@@ -7,15 +7,9 @@ export const userSchema = z.object({
   email: z
     .string({ required_error: 'Email is required' })
     .email({ message: 'Invalid email format' }),
-  password: z
-    .string({ required_error: 'Password is required' })
-    .min(8, { message: 'Password must be at least 8 characters long' }),
-  firstName: z
-    .string({ required_error: 'First name is required' })
-    .min(1, { message: 'First name cannot be empty' }),
-  lastName: z
-    .string({ required_error: 'Last name is required' })
-    .min(1, { message: 'Last name cannot be empty' }),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
   roleId: z
     .string({ required_error: 'Role ID is required' })
     .ulid({ message: 'Invalid role ID format' }),
@@ -27,15 +21,13 @@ export const createUserSchema = z.object({
   email: z
     .string({ required_error: 'Email is required' })
     .email({ message: 'Invalid email format' }),
+  image: z.string().optional(),
   password: z
     .string({ required_error: 'Password is required' })
     .min(8, { message: 'Password must be at least 8 characters long' }),
-  firstName: z
-    .string({ required_error: 'First name is required' })
-    .min(1, { message: 'First name cannot be empty' }),
-  lastName: z
-    .string({ required_error: 'Last name is required' })
-    .min(1, { message: 'Last name cannot be empty' }),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
   roleId: z
     .string({ required_error: 'Role ID is required' })
     .ulid({ message: 'Invalid role ID format' }),
@@ -50,14 +42,9 @@ export const updateUserSchema = z.object({
     .string()
     .min(8, { message: 'Password must be at least 8 characters long' })
     .optional(),
-  firstName: z
-    .string()
-    .min(1, { message: 'First name cannot be empty' })
-    .optional(),
-  lastName: z
-    .string()
-    .min(1, { message: 'Last name cannot be empty' })
-    .optional(),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
   roleId: z.string().ulid({ message: 'Invalid role ID format' }).optional(),
 });
 
@@ -65,16 +52,10 @@ export const partialUpdateUserSchema = z.object({
   email: z.string().email({ message: 'Invalid email format' }).optional(),
   password: z
     .string()
-    .min(8, { message: 'Password must be at least 8 characters long' })
-    .optional(),
-  firstName: z
-    .string()
-    .min(1, { message: 'First name cannot be empty' })
-    .optional(),
-  lastName: z
-    .string()
-    .min(1, { message: 'Last name cannot be empty' })
-    .optional(),
+    .min(8, { message: 'Password must be at least 8 characters long' }),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
   roleId: z.string().ulid({ message: 'Invalid role ID format' }).optional(),
 });
 
@@ -85,8 +66,9 @@ export const userResponseSchema = z.object({
   email: z
     .string({ required_error: 'Email is required' })
     .email({ message: 'Invalid email format' }),
-  firstName: z.string({ required_error: 'First name is required' }),
-  lastName: z.string({ required_error: 'Last name is required' }),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
   roleId: z
     .string({ required_error: 'Role ID is required' })
     .ulid({ message: 'Invalid role ID format' }),
@@ -121,12 +103,9 @@ export const userRegistrationSchema = z.object({
   password: z
     .string({ required_error: 'Password is required' })
     .min(8, { message: 'Password must be at least 8 characters long' }),
-  firstName: z
-    .string({ required_error: 'First name is required' })
-    .min(1, { message: 'First name cannot be empty' }),
-  lastName: z
-    .string({ required_error: 'Last name is required' })
-    .min(1, { message: 'Last name cannot be empty' }),
+  name: z
+    .string({ required_error: 'Name is required' })
+    .min(1, { message: 'Name cannot be empty' }),
 });
 
 export const changePasswordSchema = z

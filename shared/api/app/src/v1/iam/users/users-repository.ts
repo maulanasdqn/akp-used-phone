@@ -1,5 +1,5 @@
-import { commonService } from '../common/common-service';
-import { TMetaRequest, TResponseList } from '../common/common-dto';
+import { commonService } from '../../common/common-service';
+import { TMetaRequest, TResponseList } from '../../common/common-dto';
 import type {
   TRequestCreateUser,
   TRequestUpdateUser,
@@ -9,13 +9,13 @@ import type {
   TResponseUser,
   TResponseUserWithRole,
 } from './users-dto';
+import { PrismaClient } from '@prisma/client';
 
-export const usersRepository = () => {
+export const usersRepository = (prisma: PrismaClient) => {
   return {
     getAll: async (
       query: TRequestUserQuery
     ): Promise<TResponseList<TResponseUserWithRole>> => {
-      const { prisma } = await import('@/shared/api/database');
       const { search, roleId, sortBy, sortOrder } = query;
 
       const metaRequest: TMetaRequest = {
@@ -40,7 +40,7 @@ export const usersRepository = () => {
       };
 
       const [users, total] = await Promise.all([
-        prisma.appUsers.findMany({
+        prisma.user.findMany({
           where,
           skip,
           take,
@@ -49,23 +49,22 @@ export const usersRepository = () => {
             role: true,
           },
         }),
-        prisma.appUsers.count({ where }),
+        prisma.user.count({ where }),
       ]);
 
       const mappedUsers = users.map(
         (user): TResponseUserWithRole => ({
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roleId: user.roleId,
+          name: user.name,
+          roleId: user.roleId ?? '',
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
           role: {
-            id: user.role.id,
-            name: user.role.name,
-            createdAt: user.role.createdAt,
-            updatedAt: user.role.updatedAt,
+            id: user?.role?.id ?? '',
+            name: user?.role?.name ?? '',
+            createdAt: user?.role?.createdAt ?? new Date(),
+            updatedAt: user?.role?.updatedAt ?? new Date(),
           },
         })
       );
@@ -76,8 +75,7 @@ export const usersRepository = () => {
     getById: async (
       id: string
     ): Promise<TResponseUserWithRole | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const user = await prisma.appUsers.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id },
         include: {
           role: true,
@@ -91,16 +89,15 @@ export const usersRepository = () => {
       return {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roleId: user.roleId,
+        name: user.name,
+        roleId: user.roleId ?? '',
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         role: {
-          id: user.role.id,
-          name: user.role.name,
-          createdAt: user.role.createdAt,
-          updatedAt: user.role.updatedAt,
+          id: user?.role?.id ?? '',
+          name: user?.role?.name ?? '',
+          createdAt: user?.role?.createdAt ?? new Date(),
+          updatedAt: user?.role?.updatedAt ?? new Date(),
         },
       };
     },
@@ -108,8 +105,7 @@ export const usersRepository = () => {
     getByEmail: async (
       email: string
     ): Promise<TUserItem | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const user = await prisma.appUsers.findUnique({
+      const user = await prisma.user.findUnique({
         where: { email },
       });
 
@@ -120,33 +116,30 @@ export const usersRepository = () => {
       return {
         id: user.id,
         email: user.email,
-        password: user.password,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roleId: user.roleId,
+        name: user.name,
+        roleId: user.roleId ?? '',
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
     },
 
     create: async (data: TRequestCreateUser): Promise<TResponseUser> => {
-      const { prisma } = await import('@/shared/api/database');
-      const user = await prisma.appUsers.create({
+      const user = await prisma.user.create({
         data: {
           email: data.email,
-          password: data.password,
-          firstName: data.firstName,
-          lastName: data.lastName,
+          name: data.name,
           roleId: data.roleId,
+          image:
+            data.image ??
+            'https://www.shutterstock.com/image-vector/vector-design-avatar-dummy-sign-600nw-1290556063.jpg',
         },
       });
 
       return {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roleId: user.roleId,
+        name: user.name,
+        roleId: user.roleId ?? '',
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
@@ -156,14 +149,12 @@ export const usersRepository = () => {
       data: TRequestUpdateUser
     ): Promise<TResponseUser | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const user = await prisma.appUsers.update({
+        const user = await prisma.user.update({
           where: { id: data.id },
           data: {
             ...(data.email && { email: data.email }),
             ...(data.password && { password: data.password }),
-            ...(data.firstName && { firstName: data.firstName }),
-            ...(data.lastName && { lastName: data.lastName }),
+            ...(data.name && { lastName: data.name }),
             ...(data.roleId && { roleId: data.roleId }),
           },
         });
@@ -171,9 +162,8 @@ export const usersRepository = () => {
         return {
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roleId: user.roleId,
+          name: user.name,
+          roleId: user.roleId ?? '',
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         };
@@ -187,14 +177,12 @@ export const usersRepository = () => {
       data: TRequestPartialUpdateUser
     ): Promise<TResponseUser | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const user = await prisma.appUsers.update({
+        const user = await prisma.user.update({
           where: { id },
           data: {
             ...(data.email && { email: data.email }),
             ...(data.password && { password: data.password }),
-            ...(data.firstName && { firstName: data.firstName }),
-            ...(data.lastName && { lastName: data.lastName }),
+            ...(data.name && { name: data.name }),
             ...(data.roleId && { roleId: data.roleId }),
           },
         });
@@ -202,9 +190,8 @@ export const usersRepository = () => {
         return {
           id: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roleId: user.roleId,
+          name: user.name,
+          roleId: user.roleId ?? '',
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         };
@@ -215,8 +202,7 @@ export const usersRepository = () => {
 
     delete: async (id: string): Promise<{ message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        await prisma.appUsers.delete({
+        await prisma.user.delete({
           where: { id },
         });
         return { message: 'User deleted successfully' };
@@ -226,8 +212,7 @@ export const usersRepository = () => {
     },
 
     exists: async (id: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const user = await prisma.appUsers.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id },
         select: { id: true },
       });
@@ -235,28 +220,11 @@ export const usersRepository = () => {
     },
 
     existsByEmail: async (email: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const user = await prisma.appUsers.findUnique({
+      const user = await prisma.user.findUnique({
         where: { email },
         select: { id: true },
       });
       return !!user;
-    },
-
-    updatePassword: async (
-      id: string,
-      hashedPassword: string
-    ): Promise<{ message: string }> => {
-      try {
-        const { prisma } = await import('@/shared/api/database');
-        await prisma.appUsers.update({
-          where: { id },
-          data: { password: hashedPassword },
-        });
-        return { message: 'Password updated successfully' };
-      } catch (error) {
-        return { message: (error as Error).message };
-      }
     },
   };
 };

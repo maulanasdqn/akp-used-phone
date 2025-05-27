@@ -18,7 +18,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun run apps/api/src/main.ts",
+        "command": "bun run --watch apps/api/src/main.ts",
         "cwd": "."
       }
     },

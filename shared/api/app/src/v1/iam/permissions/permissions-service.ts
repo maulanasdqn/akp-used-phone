@@ -5,68 +5,60 @@ import {
   updatePermissionSchema,
   permissionQuerySchema,
 } from './permissions-schema';
-import { commonService } from '../common/common-service';
+import { protectedProcedure } from '@/shared/api/utils';
 
-const t = commonService().initTrpc();
-const publicProcedure = t.procedure;
-const router = t.router;
-
-export const permissionsRouter = router({
-  getAll: publicProcedure
+export const permissionsService = {
+  getAll: protectedProcedure
     .input(permissionQuerySchema)
-    .query(async ({ input }) => {
-      return await permissionsRepository().getAll(input);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).getAll(input);
     }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .query(async ({ input }) => {
-      return await permissionsRepository().getById(input.id);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).getById(input.id);
     }),
 
-  getByName: publicProcedure
+  getByName: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await permissionsRepository().getByName(input.name);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).getByName(input.name);
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(createPermissionSchema)
-    .mutation(async ({ input }) => {
-      // Check if permission name already exists
-      const existingPermission = await permissionsRepository().existsByName(
-        input.name
-      );
+    .mutation(async ({ input, ctx }) => {
+      const existingPermission = await permissionsRepository(
+        ctx.prisma
+      ).existsByName(input.name);
       if (existingPermission) {
         return { message: 'Permission name already exists' };
       }
-
-      return await permissionsRepository().create(input);
+      return await permissionsRepository(ctx.prisma).create(input);
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(updatePermissionSchema)
-    .mutation(async ({ input }) => {
-      // Check if permission exists
-      const permissionExists = await permissionsRepository().exists(input.id);
+    .mutation(async ({ input, ctx }) => {
+      const permissionExists = await permissionsRepository(ctx.prisma).exists(
+        input.id
+      );
       if (!permissionExists) {
         return { message: 'Permission not found' };
       }
-
-      // Check if new name already exists (if name is being updated)
       if (input.name) {
-        const existingPermission = await permissionsRepository().getByName(
-          input.name
-        );
+        const existingPermission = await permissionsRepository(
+          ctx.prisma
+        ).getByName(input.name);
         if ('id' in existingPermission && existingPermission.id !== input.id) {
           return { message: 'Permission name already exists' };
         }
       }
-
-      return await permissionsRepository().update(input);
+      return await permissionsRepository(ctx.prisma).update(input);
     }),
 
-  partialUpdate: publicProcedure
+  partialUpdate: protectedProcedure
     .input(
       z.object({
         id: z.string().ulid(),
@@ -76,53 +68,50 @@ export const permissionsRouter = router({
         }),
       })
     )
-    .mutation(async ({ input }) => {
-      // Check if permission exists
-      const permissionExists = await permissionsRepository().exists(input.id);
+    .mutation(async ({ input, ctx }) => {
+      const permissionExists = await permissionsRepository(ctx.prisma).exists(
+        input.id
+      );
       if (!permissionExists) {
         return { message: 'Permission not found' };
       }
-
-      // Check if new name already exists (if name is being updated)
       if (input.data.name) {
-        const existingPermission = await permissionsRepository().getByName(
-          input.data.name
-        );
+        const existingPermission = await permissionsRepository(
+          ctx.prisma
+        ).getByName(input.data.name);
         if ('id' in existingPermission && existingPermission.id !== input.id) {
           return { message: 'Permission name already exists' };
         }
       }
-
-      return await permissionsRepository().partialUpdate(input.id, input.data);
+      return await permissionsRepository(ctx.prisma).partialUpdate(
+        input.id,
+        input.data
+      );
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .mutation(async ({ input }) => {
-      return await permissionsRepository().delete(input.id);
+    .mutation(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).delete(input.id);
     }),
 
-  exists: publicProcedure
+  exists: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .query(async ({ input }) => {
-      return await permissionsRepository().exists(input.id);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).exists(input.id);
     }),
 
-  existsByName: publicProcedure
+  existsByName: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await permissionsRepository().existsByName(input.name);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).existsByName(input.name);
     }),
 
-  getRolesCount: publicProcedure
+  getRolesCount: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .query(async ({ input }) => {
-      return await permissionsRepository().getRolesCount(input.id);
+    .query(async ({ input, ctx }) => {
+      return await permissionsRepository(ctx.prisma).getRolesCount(input.id);
     }),
-});
-
-export type PermissionsRouter = typeof permissionsRouter;
-
-export const permissionsService = () => {
-  return permissionsRepository();
 };
+
+export type PermissionsRouter = typeof permissionsService;

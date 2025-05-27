@@ -1,14 +1,43 @@
+import { createRoot } from 'react-dom/client';
+import { middleware } from './middleware';
 import { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom/client';
-import App from './app/app';
+import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router';
+import {
+  add404PageToRoutesChildren,
+  addErrorElementToRoutes,
+  convertPagesToRoute,
+  QueryProvider,
+  TRPCProvider,
+} from '@/shared/web/utils';
+import { Toaster } from 'sonner';
 import './global.css';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const files = import.meta.glob('./app/**/*(page|layout).tsx');
+const errorFiles = import.meta.glob('./app/**/*error.tsx');
+const notFoundFiles = import.meta.glob('./app/**/*404.tsx');
+const loadingFiles = import.meta.glob('./app/**/*loading.tsx');
 
-root.render(
+const routes = convertPagesToRoute(files, loadingFiles) as RouteObject;
+addErrorElementToRoutes(errorFiles, routes);
+add404PageToRoutesChildren(notFoundFiles, routes);
+
+const router = createBrowserRouter([
+  {
+    ...routes,
+    loader: middleware,
+    shouldRevalidate: () => true,
+  },
+]);
+
+const rootElement = document.getElementById('root');
+
+if (!rootElement) throw new Error('Failed to find the root element');
+
+createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <TRPCProvider>
+      <Toaster position="top-right" />
+      <RouterProvider router={router} />
+    </TRPCProvider>
   </StrictMode>
 );

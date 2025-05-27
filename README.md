@@ -208,7 +208,7 @@ akp-used-phone/
 
 ## 🗃️ Database Schema
 
-### Users (`AppUsers`)
+### Users (`user`)
 
 - **ULID-based IDs** for unique identification
 - **Email-based authentication** with unique constraints
@@ -217,14 +217,14 @@ akp-used-phone/
 - **Role-based access control** (roleId foreign key)
 - **Audit trails** (createdAt, updatedAt)
 
-### Roles & Permissions (`AppRoles`, `AppPermissions`, `AppRolePermissions`)
+### Roles & Permissions (`role`, `permission`, `rolePermission`)
 
 - **Roles**: Define user access levels (admin, manager, user)
 - **Permissions**: Granular access controls for specific actions
 - **Role Permissions**: Many-to-many relationship between roles and permissions
 - **Full RBAC implementation** for secure access control
 
-### Products (`AppProducts`)
+### Products (`product`)
 
 - **Unique SKU and slug** identifiers for inventory management
 - **Rich product descriptions** with detailed specifications

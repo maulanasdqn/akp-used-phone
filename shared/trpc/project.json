@@ -1,0 +1,25 @@
+{
+  "name": "global-trpc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared/trpc/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/shared/trpc",
+        "configFile": "shared/trpc/vite.config.ts"
+      },
+      "externalDependencies": ["vite"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["shared/trpc/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  }
+}

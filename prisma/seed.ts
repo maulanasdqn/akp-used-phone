@@ -1,60 +1,58 @@
-import { hashPassword } from '@/shared/api/utils';
-
 async function main() {
   const { prisma } = await import('@/shared/api/database');
   console.log('🌱 Starting database seeding...');
 
   const permissions = [
-    { name: 'users.read', permission: 'Read users' },
-    { name: 'users.write', permission: 'Create and update users' },
-    { name: 'users.delete', permission: 'Delete users' },
-    { name: 'products.read', permission: 'Read products' },
-    { name: 'products.write', permission: 'Create and update products' },
-    { name: 'products.delete', permission: 'Delete products' },
-    { name: 'admin.access', permission: 'Access admin panel' },
+    { name: 'users.read' },
+    { name: 'users.write' },
+    { name: 'users.delete' },
+    { name: 'products.read' },
+    { name: 'products.write' },
+    { name: 'products.delete' },
+    { name: 'admin.access' },
   ];
 
   console.log('📝 Creating permissions...');
   for (const permission of permissions) {
-    await prisma.appPermissions.upsert({
+    await prisma.permission.upsert({
       where: { name: permission.name },
       update: {},
       create: permission,
     });
   }
 
-  let adminRole = await prisma.appRoles.findFirst({
+  let adminRole = await prisma.role.findFirst({
     where: { name: 'admin' },
   });
   if (!adminRole) {
-    adminRole = await prisma.appRoles.create({
+    adminRole = await prisma.role.create({
       data: { name: 'admin' },
     });
   }
 
-  let userRole = await prisma.appRoles.findFirst({
+  let userRole = await prisma.role.findFirst({
     where: { name: 'user' },
   });
   if (!userRole) {
-    userRole = await prisma.appRoles.create({
+    userRole = await prisma.role.create({
       data: { name: 'user' },
     });
   }
 
-  let managerRole = await prisma.appRoles.findFirst({
+  let managerRole = await prisma.role.findFirst({
     where: { name: 'manager' },
   });
   if (!managerRole) {
-    managerRole = await prisma.appRoles.create({
+    managerRole = await prisma.role.create({
       data: { name: 'manager' },
     });
   }
 
   console.log('👑 Creating role permissions...');
 
-  const allPermissions = await prisma.appPermissions.findMany();
+  const allPermissions = await prisma.permission.findMany();
   for (const permission of allPermissions) {
-    await prisma.appRolePermissions.upsert({
+    await prisma.rolePermission.upsert({
       where: {
         roleId_permissionId: {
           roleId: adminRole.id,
@@ -69,7 +67,7 @@ async function main() {
     });
   }
 
-  const managerPermissions = await prisma.appPermissions.findMany({
+  const managerPermissions = await prisma.permission.findMany({
     where: {
       name: {
         in: ['users.read', 'users.write', 'products.read', 'products.write'],
@@ -78,7 +76,7 @@ async function main() {
   });
 
   for (const permission of managerPermissions) {
-    await prisma.appRolePermissions.upsert({
+    await prisma.rolePermission.upsert({
       where: {
         roleId_permissionId: {
           roleId: managerRole.id,
@@ -93,7 +91,7 @@ async function main() {
     });
   }
 
-  const userPermissions = await prisma.appPermissions.findMany({
+  const userPermissions = await prisma.permission.findMany({
     where: {
       name: {
         in: ['products.read'],
@@ -102,7 +100,7 @@ async function main() {
   });
 
   for (const permission of userPermissions) {
-    await prisma.appRolePermissions.upsert({
+    await prisma.rolePermission.upsert({
       where: {
         roleId_permissionId: {
           roleId: userRole.id,
@@ -117,71 +115,61 @@ async function main() {
     });
   }
 
-  const hashedPassword = await hashPassword('admin123');
-
-  await prisma.appUsers.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@example.com' },
     update: {},
     create: {
       email: 'admin@example.com',
-      password: hashedPassword,
-      firstName: 'Admin',
-      lastName: 'User',
+      name: 'Admin User',
       roleId: adminRole.id,
+      image:
+        'https://www.shutterstock.com/image-vector/vector-design-avatar-dummy-sign-600nw-1290556063.jpg',
     },
   });
 
-  const testUserPassword = await hashPassword('user123');
-
-  await prisma.appUsers.upsert({
+  await prisma.user.upsert({
     where: { email: 'user@example.com' },
     update: {},
     create: {
       email: 'user@example.com',
-      password: testUserPassword,
-      firstName: 'Test',
-      lastName: 'User',
+      name: 'Test User',
       roleId: userRole.id,
+      image: 'https://example.com/images/user-avatar.jpg',
     },
   });
 
-  const managerPassword = await hashPassword('manager123');
-
-  await prisma.appUsers.upsert({
+  await prisma.user.upsert({
     where: { email: 'manager@example.com' },
     update: {},
     create: {
       email: 'manager@example.com',
-      password: managerPassword,
-      firstName: 'Store',
-      lastName: 'Manager',
+      name: 'Store Manager',
       roleId: managerRole.id,
+      image: 'https://example.com/images/manager-avatar.jpg',
     },
   });
 
   const additionalUsers = [
     {
       email: 'john.doe@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
+      name: 'John Doe',
       roleId: userRole.id,
+      image: 'https://example.com/images/john-doe-avatar.jpg',
     },
     {
       email: 'jane.smith@example.com',
-      firstName: 'Jane',
-      lastName: 'Smith',
+      name: 'Jane Smith',
       roleId: userRole.id,
+      image: 'https://example.com/images/jane-smith-avatar.jpg',
     },
   ];
 
   for (const user of additionalUsers) {
-    const userPassword = await hashPassword('password123');
-    await prisma.appUsers.upsert({
+    await prisma.user.upsert({
       where: { email: user.email },
       update: {},
       create: {
         ...user,
-        password: userPassword,
       },
     });
   }
@@ -251,7 +239,7 @@ async function main() {
     },
   ];
 
-  const adminUser = await prisma.appUsers.findUnique({
+  const adminUser = await prisma.user.findUnique({
     where: { email: 'admin@example.com' },
   });
 
@@ -262,7 +250,7 @@ async function main() {
   }
 
   for (const product of sampleProducts) {
-    await prisma.appProducts.upsert({
+    await prisma.product.upsert({
       where: { sku: product.sku },
       update: {},
       create: {

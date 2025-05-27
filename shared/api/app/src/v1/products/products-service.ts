@@ -4,34 +4,33 @@ import {
   createProductSchema,
   updateProductSchema,
   productQuerySchema,
+  partialUpdateProductSchema,
 } from './products-schema';
-import { commonService } from '../iam/common/common-service';
+import { protectedProcedure, publicProcedure } from '@/shared/api/utils';
 
-const t = commonService().initTrpc();
-const publicProcedure = t.procedure;
-const router = t.router;
-
-export const productsRouter = router({
-  getAll: publicProcedure.input(productQuerySchema).query(async ({ input }) => {
-    return await productsRepository().getAll(input);
-  }),
+export const productsService = {
+  getAll: publicProcedure
+    .input(productQuerySchema)
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).getAll(input);
+    }),
 
   getById: publicProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .query(async ({ input }) => {
-      return await productsRepository().getById(input.id);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).getById(input.id);
     }),
 
   getBySku: publicProcedure
     .input(z.object({ sku: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await productsRepository().getBySku(input.sku);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).getBySku(input.sku);
     }),
 
   getBySlug: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await productsRepository().getBySlug(input.slug);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).getBySlug(input.slug);
     }),
 
   getByCreator: publicProcedure
@@ -41,159 +40,130 @@ export const productsRouter = router({
         query: productQuerySchema,
       })
     )
-    .query(async ({ input }) => {
-      return await productsRepository().getByCreator(
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).getByCreator(
         input.createdBy,
         input.query
       );
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(createProductSchema)
-    .mutation(async ({ input }) => {
-      // Check if SKU already exists
-      const existingSku = await productsRepository().existsBySku(input.sku);
+    .mutation(async ({ input, ctx }) => {
+      const existingSku = await productsRepository(ctx.prisma).existsBySku(
+        input.sku
+      );
       if (existingSku) {
         return { message: 'SKU already exists' };
       }
-
-      // Check if slug already exists
-      const existingSlug = await productsRepository().existsBySlug(input.slug);
+      const existingSlug = await productsRepository(ctx.prisma).existsBySlug(
+        input.slug
+      );
       if (existingSlug) {
         return { message: 'Slug already exists' };
       }
-
-      return await productsRepository().create(input);
+      return await productsRepository(ctx.prisma).create(input);
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(updateProductSchema)
-    .mutation(async ({ input }) => {
-      // Check if product exists
-      const productExists = await productsRepository().exists(input.id);
+    .mutation(async ({ input, ctx }) => {
+      const productExists = await productsRepository(ctx.prisma).exists(
+        input.id
+      );
       if (!productExists) {
         return { message: 'Product not found' };
       }
-
-      // Check if new SKU already exists (if SKU is being updated)
       if (input.sku) {
-        const existingProduct = await productsRepository().getBySku(input.sku);
+        const existingProduct = await productsRepository(ctx.prisma).getBySku(
+          input.sku
+        );
         if ('id' in existingProduct && existingProduct.id !== input.id) {
           return { message: 'SKU already exists' };
         }
       }
-
-      // Check if new slug already exists (if slug is being updated)
       if (input.slug) {
-        const existingProduct = await productsRepository().getBySlug(
+        const existingProduct = await productsRepository(ctx.prisma).getBySlug(
           input.slug
         );
         if ('id' in existingProduct && existingProduct.id !== input.id) {
           return { message: 'Slug already exists' };
         }
       }
-
-      return await productsRepository().update(input);
+      return await productsRepository(ctx.prisma).update(input);
     }),
 
-  partialUpdate: publicProcedure
-    .input(
-      z.object({
-        id: z.string().ulid(),
-        data: z.object({
-          sku: z.string().min(1).max(50).optional(),
-          slug: z
-            .string()
-            .min(1)
-            .max(100)
-            .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-            .optional(),
-          name: z.string().min(1).max(200).optional(),
-          description: z.string().min(1).optional(),
-          price: z.number().positive().multipleOf(0.01).optional(),
-          imageUrl: z.string().url().optional().nullable(),
-          stockQuantity: z.number().int().min(0).optional(),
-          minimumOrderQuantity: z.number().int().min(1).optional(),
-        }),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // Check if product exists
-      const productExists = await productsRepository().exists(input.id);
+  partialUpdate: protectedProcedure
+    .input(partialUpdateProductSchema)
+    .mutation(async ({ input, ctx }) => {
+      const productExists = await productsRepository(ctx.prisma).exists(
+        input.id
+      );
       if (!productExists) {
         return { message: 'Product not found' };
       }
-
-      // Check if new SKU already exists (if SKU is being updated)
-      if (input.data.sku) {
-        const existingProduct = await productsRepository().getBySku(
-          input.data.sku
+      if (input.sku) {
+        const existingProduct = await productsRepository(ctx.prisma).getBySku(
+          input.sku
         );
         if ('id' in existingProduct && existingProduct.id !== input.id) {
           return { message: 'SKU already exists' };
         }
       }
-
-      // Check if new slug already exists (if slug is being updated)
-      if (input.data.slug) {
-        const existingProduct = await productsRepository().getBySlug(
-          input.data.slug
+      if (input.slug) {
+        const existingProduct = await productsRepository(ctx.prisma).getBySlug(
+          input.slug
         );
         if ('id' in existingProduct && existingProduct.id !== input.id) {
           return { message: 'Slug already exists' };
         }
       }
-
-      return await productsRepository().partialUpdate(input.id, input.data);
+      return await productsRepository(ctx.prisma).partialUpdate(input);
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .mutation(async ({ input }) => {
-      return await productsRepository().delete(input.id);
+    .mutation(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).delete(input.id);
     }),
 
-  exists: publicProcedure
+  exists: protectedProcedure
     .input(z.object({ id: z.string().ulid() }))
-    .query(async ({ input }) => {
-      return await productsRepository().exists(input.id);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).exists(input.id);
     }),
 
-  existsBySku: publicProcedure
+  existsBySku: protectedProcedure
     .input(z.object({ sku: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await productsRepository().existsBySku(input.sku);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).existsBySku(input.sku);
     }),
 
-  existsBySlug: publicProcedure
+  existsBySlug: protectedProcedure
     .input(z.object({ slug: z.string().min(1) }))
-    .query(async ({ input }) => {
-      return await productsRepository().existsBySlug(input.slug);
+    .query(async ({ input, ctx }) => {
+      return await productsRepository(ctx.prisma).existsBySlug(input.slug);
     }),
 
-  updateStock: publicProcedure
+  updateStock: protectedProcedure
     .input(
       z.object({
         id: z.string().ulid(),
         stockQuantity: z.number().int().min(0),
       })
     )
-    .mutation(async ({ input }) => {
-      // Check if product exists
-      const productExists = await productsRepository().exists(input.id);
+    .mutation(async ({ input, ctx }) => {
+      const productExists = await productsRepository(ctx.prisma).exists(
+        input.id
+      );
       if (!productExists) {
         return { message: 'Product not found' };
       }
-
-      return await productsRepository().updateStock(
+      return await productsRepository(ctx.prisma).updateStock(
         input.id,
         input.stockQuantity
       );
     }),
-});
-
-export type ProductsRouter = typeof productsRouter;
-
-export const productsService = () => {
-  return productsRepository();
 };
+
+export type ProductsRouter = typeof productsService;

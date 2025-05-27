@@ -1,5 +1,5 @@
-import { commonService } from '../common/common-service';
-import { TMetaRequest, TResponseList } from '../common/common-dto';
+import { commonService } from '../../common/common-service';
+import { TMetaRequest, TResponseList } from '../../common/common-dto';
 import type {
   TRequestCreateRole,
   TRequestUpdateRole,
@@ -8,13 +8,13 @@ import type {
   TRoleItem,
   TResponseRole,
 } from './roles-dto';
+import { PrismaClient } from '@prisma/client';
 
-export const rolesRepository = () => {
+export const rolesRepository = (prisma: PrismaClient) => {
   return {
     getAll: async (
       query: TRequestRoleQuery
     ): Promise<TResponseList<TResponseRole>> => {
-      const { prisma } = await import('@/shared/api/database');
       const { search, sortBy, sortOrder } = query;
 
       const metaRequest: TMetaRequest = {
@@ -34,13 +34,13 @@ export const rolesRepository = () => {
       };
 
       const [roles, total] = await Promise.all([
-        prisma.appRoles.findMany({
+        prisma.role.findMany({
           where,
           skip,
           take,
           orderBy: { [sortBy]: sortOrder },
         }),
-        prisma.appRoles.count({ where }),
+        prisma.role.count({ where }),
       ]);
 
       const mappedRoles = roles.map(
@@ -58,8 +58,7 @@ export const rolesRepository = () => {
     getById: async (
       id: string
     ): Promise<TResponseRole | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const role = await prisma.appRoles.findUnique({
+      const role = await prisma.role.findUnique({
         where: { id },
       });
 
@@ -78,8 +77,7 @@ export const rolesRepository = () => {
     getByName: async (
       name: string
     ): Promise<TRoleItem | { message: string }> => {
-      const { prisma } = await import('@/shared/api/database');
-      const role = await prisma.appRoles.findFirst({
+      const role = await prisma.role.findFirst({
         where: { name },
       });
 
@@ -96,8 +94,7 @@ export const rolesRepository = () => {
     },
 
     create: async (data: TRequestCreateRole): Promise<TResponseRole> => {
-      const { prisma } = await import('@/shared/api/database');
-      const role = await prisma.appRoles.create({
+      const role = await prisma.role.create({
         data: {
           name: data.name,
         },
@@ -115,8 +112,7 @@ export const rolesRepository = () => {
       data: TRequestUpdateRole
     ): Promise<TResponseRole | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const role = await prisma.appRoles.update({
+        const role = await prisma.role.update({
           where: { id: data.id },
           data: {
             ...(data.name && { name: data.name }),
@@ -139,8 +135,7 @@ export const rolesRepository = () => {
       data: TRequestPartialUpdateRole
     ): Promise<TResponseRole | { message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        const role = await prisma.appRoles.update({
+        const role = await prisma.role.update({
           where: { id },
           data: {
             ...(data.name && { name: data.name }),
@@ -160,9 +155,7 @@ export const rolesRepository = () => {
 
     delete: async (id: string): Promise<{ message: string }> => {
       try {
-        const { prisma } = await import('@/shared/api/database');
-        // Check if role is being used by any users
-        const usersWithRole = await prisma.appUsers.count({
+        const usersWithRole = await prisma.user.count({
           where: { roleId: id },
         });
 
@@ -172,7 +165,7 @@ export const rolesRepository = () => {
           };
         }
 
-        await prisma.appRoles.delete({
+        await prisma.role.delete({
           where: { id },
         });
         return { message: 'Role deleted successfully' };
@@ -182,8 +175,7 @@ export const rolesRepository = () => {
     },
 
     exists: async (id: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const role = await prisma.appRoles.findUnique({
+      const role = await prisma.role.findUnique({
         where: { id },
         select: { id: true },
       });
@@ -191,8 +183,7 @@ export const rolesRepository = () => {
     },
 
     existsByName: async (name: string): Promise<boolean> => {
-      const { prisma } = await import('@/shared/api/database');
-      const role = await prisma.appRoles.findFirst({
+      const role = await prisma.role.findFirst({
         where: { name },
         select: { id: true },
       });
@@ -200,8 +191,7 @@ export const rolesRepository = () => {
     },
 
     getUsersCount: async (id: string): Promise<number> => {
-      const { prisma } = await import('@/shared/api/database');
-      return await prisma.appUsers.count({
+      return await prisma.user.count({
         where: { roleId: id },
       });
     },
