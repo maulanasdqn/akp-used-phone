@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { trpcServer } from '@hono/trpc-server';
-import { appRouter, createContext } from '@/shared/api/trpc/server';
+import { appRouter, createContext } from '@/shared/api/trpc';
 
 export const trpcMiddleware = () => {
   const app = new Hono();

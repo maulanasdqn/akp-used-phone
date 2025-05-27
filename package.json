@@ -22,7 +22,8 @@
     "db:push": "nx run prisma:push",
     "db:migrate": "nx run prisma:migrate",
     "db:reset": "nx run prisma:reset-interactive",
-    "db:generate": "nx run prisma:generate"
+    "db:generate": "nx run prisma:generate",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.5.1",

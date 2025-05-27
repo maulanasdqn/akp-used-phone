@@ -1,7 +1,7 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
-import { prisma } from '@/shared/api/database/index';
-import type { PrismaClient } from '@/shared/api/database/index';
+import { prisma } from '@/shared/api/database';
+import type { PrismaClient } from '@/shared/api/database';
 
 export const createContext = () => {
   return {
