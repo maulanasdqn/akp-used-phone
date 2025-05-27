@@ -1,0 +1,25 @@
+{
+  "name": "api-utils",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared/api/utils/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/shared/api/utils",
+        "configFile": "shared/api/utils/vite.config.ts"
+      },
+      "externalDependencies": ["vite"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["shared/api/utils/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  }
+}
