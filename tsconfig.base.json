@@ -11,11 +11,11 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/shared/api/database/*": ["shared/api/database/src/*"],
-      "@/shared/api/trpc/*": ["shared/api/trpc/src/*"],
-      "@/shared/web/components/*": ["shared/web/components/src/*"],
-      "@/shared/api/app/*": ["shared/api/app/src/*"],
-      "@/shared/web/utils/*": ["shared/web/utils/src/*"]
+      "@/shared/api/app": ["shared/api/app/src/index.ts"],
+      "@/shared/api/trpc": ["shared/api/trpc/src/index.ts"],
+      "@/shared/api/database": ["shared/api/database/src/index.ts"],
+      "@/shared/web/utils": ["shared/web/utils/src/index.ts"],
+      "@/shared/web/components/*": ["shared/web/components/src/*"]
     },
     "types": ["bun-types"]
   }
