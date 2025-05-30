@@ -10,7 +10,10 @@ const app = new Hono();
 app.use(
   '*',
   cors({
-    origin: 'http://localhost:5174',
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.FRONTEND_URL
+        : 'http://localhost:5174',
     allowHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-trpc-source'],
     allowMethods: ['POST', 'GET', 'OPTIONS'],
     exposeHeaders: ['Content-Length', 'Set-Cookie'],
@@ -25,9 +28,13 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw));
 
 app.use('/v1/trpc/*', trpcMiddleware());
 
-Bun.serve({
-  port: process.env.API_PORT ?? 3000,
-  fetch: app.fetch,
-});
+// For local development with Bun
+if (process.env.NODE_ENV !== 'production') {
+  Bun.serve({
+    port: process.env.API_PORT ?? 3000,
+    fetch: app.fetch,
+  });
+}
 
+// Export for Vercel
 export default app;

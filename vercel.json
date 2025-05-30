@@ -1,15 +1,32 @@
 {
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
+      "src": "apps/api/src/main.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "apps/store/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "../../dist/apps/store"
+      }
     }
   ],
-  "redirects": [{ "source": "/", "destination": "/api", "permanent": false }],
   "routes": [
     {
-      "src": "/[^.]+",
-      "dest": "/"
+      "src": "/api/(.*)",
+      "dest": "/apps/api/src/main.ts"
+    },
+    {
+      "src": "/v1/trpc/(.*)",
+      "dest": "/apps/api/src/main.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/apps/store/$1"
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }
