@@ -6,17 +6,10 @@
       "use": "@vercel/node"
     },
     {
-      "src": "apps/store/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "../../dist/apps/store"
-      }
-    },
-    {
-      "src": "apps/backoffice/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "../../dist/apps/backoffice"
+        "distDir": "dist"
       }
     }
   ],
@@ -30,14 +23,22 @@
       "dest": "/apps/api/src/main.ts"
     },
     {
-      "src": "/(.*)",
+      "src": "/backoffice/(.*)",
+      "dest": "/apps/backoffice/$1"
+    },
+    {
+      "src": "/backoffice",
+      "dest": "/apps/backoffice/index.html"
+    },
+    {
+      "src": "/store/(.*)",
       "dest": "/apps/store/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/apps/backoffice/$1"
+      "src": "/store",
+      "dest": "/apps/store/index.html"
     }
   ],
-  "buildCommand": "bun run build",
-  "installCommand": "bun install"
+  "buildCommand": "nx build api && nx build store && nx build backoffice",
+  "installCommand": "npm install"
 }
