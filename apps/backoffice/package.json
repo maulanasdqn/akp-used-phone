@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "nx store build",
+    "build": "nx backoffice build",
     "dev": "vite",
     "preview": "vite preview"
   },

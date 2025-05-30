@@ -11,6 +11,13 @@
       "config": {
         "distDir": "../../dist/apps/store"
       }
+    },
+    {
+      "src": "apps/backoffice/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "../../dist/apps/backoffice"
+      }
     }
   ],
   "routes": [
@@ -25,8 +32,12 @@
     {
       "src": "/(.*)",
       "dest": "/apps/store/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/apps/backoffice/$1"
     }
   ],
-  "buildCommand": "npm run build",
-  "installCommand": "npm install"
+  "buildCommand": "bun run build",
+  "installCommand": "bun install"
 }
