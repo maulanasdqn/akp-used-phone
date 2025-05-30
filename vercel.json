@@ -23,23 +23,21 @@
       "dest": "/dist/apps/api/main.js"
     },
     {
-      "src": "/backoffice/(.*)",
-      "dest": "/dist/apps/backoffice/$1"
+      "src": "/backoffice/(.+\\.(?:js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|map))$",
+      "dest": "/dist/apps/backoffice/$1",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
     },
     {
-      "src": "/backoffice",
+      "src": "/backoffice/(.*)",
       "dest": "/dist/apps/backoffice/index.html"
     },
     {
+      "src": "/store/(.+\\.(?:js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|map))$",
+      "dest": "/dist/apps/store/$1",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
+    },
+    {
       "src": "/store/(.*)",
-      "dest": "/dist/apps/store/$1"
-    },
-    {
-      "src": "/store",
-      "dest": "/dist/apps/store/index.html"
-    },
-    {
-      "src": "/(.*)",
       "dest": "/dist/apps/store/index.html"
     }
   ],
