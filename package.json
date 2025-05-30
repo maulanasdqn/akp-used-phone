@@ -27,6 +27,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.3",
     "@hono/trpc-server": "^0.3.4",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "6.8.2",
