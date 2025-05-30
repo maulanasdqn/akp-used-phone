@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/apps/api/main.js",
+      "src": "dist/apps/api/apps/api/src/main.js",
       "use": "@vercel/node"
     },
     {
@@ -16,11 +16,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/dist/apps/api/main.js"
+      "dest": "/dist/apps/api/apps/api/src/main.js"
     },
     {
       "src": "/v1/trpc/(.*)",
-      "dest": "/dist/apps/api/main.js"
+      "dest": "/dist/apps/api/apps/api/src/main.js"
     },
     {
       "src": "/backoffice/(.+\\.(?:js|css|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|map))$",
