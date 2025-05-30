@@ -6,13 +6,12 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/vite:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/shared/api/database"],
       "options": {
-        "outputPath": "dist/shared/api/database",
-        "configFile": "shared/api/database/vite.config.ts"
-      },
-      "externalDependencies": ["vite"]
+        "command": "tsc -p shared/api/database/tsconfig.lib.json",
+        "cwd": "."
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint",

@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "apps/api/src/main.ts",
+      "src": "dist/apps/api/main.js",
       "use": "@vercel/node"
     },
     {
@@ -16,27 +16,31 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/apps/api/src/main.ts"
+      "dest": "/dist/apps/api/main.js"
     },
     {
       "src": "/v1/trpc/(.*)",
-      "dest": "/apps/api/src/main.ts"
+      "dest": "/dist/apps/api/main.js"
     },
     {
       "src": "/backoffice/(.*)",
-      "dest": "/apps/backoffice/$1"
+      "dest": "/dist/apps/backoffice/$1"
     },
     {
       "src": "/backoffice",
-      "dest": "/apps/backoffice/index.html"
+      "dest": "/dist/apps/backoffice/index.html"
     },
     {
       "src": "/store/(.*)",
-      "dest": "/apps/store/$1"
+      "dest": "/dist/apps/store/$1"
     },
     {
       "src": "/store",
-      "dest": "/apps/store/index.html"
+      "dest": "/dist/apps/store/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/apps/store/index.html"
     }
   ],
   "buildCommand": "nx build api && nx build store && nx build backoffice",

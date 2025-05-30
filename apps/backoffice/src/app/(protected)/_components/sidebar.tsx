@@ -24,6 +24,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/shared/web/components/ui/sidebar';
+import { Link } from 'react-router';
 
 const data = {
   navMain: [
@@ -103,7 +104,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <BarChart3 className="size-4" />
                 </div>
@@ -111,7 +112,7 @@ export function AppSidebar() {
                   <span className="truncate font-semibold">Dashboard</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
