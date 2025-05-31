@@ -28,6 +28,11 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw));
 
 app.use('/v1/trpc/*', trpcMiddleware());
 
+// Health check endpoint
+app.get('/api/health', (c) => {
+  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // For local development with Bun
 if (process.env.NODE_ENV !== 'production') {
   Bun.serve({
