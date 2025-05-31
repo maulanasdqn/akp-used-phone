@@ -38,7 +38,6 @@
     "@hookform/resolvers": "^5.0.1",
     "@k11r/nx-cloudflare-wrangler": "^3.3.5",
     "@prisma/client": "6.8.2",
-    "@prisma/extension-accelerate": "^2.0.1",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",

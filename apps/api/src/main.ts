@@ -12,7 +12,8 @@ app.use(
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://akp-used-phone.vercel.app',
+      'https://store.used.msdqn.dev',
+      'https://backoffice.used.msdqn.dev',
     ],
     allowHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-trpc-source'],
     allowMethods: ['POST', 'GET', 'OPTIONS'],
@@ -34,6 +35,7 @@ app.get('/api/health', (c) => {
 
 if (process.env.NODE_ENV !== 'production' && typeof Bun !== 'undefined') {
   Bun.serve({
+    hostname: '0.0.0.0',
     port: process.env.API_PORT ?? 3000,
     fetch: app.fetch,
   });
