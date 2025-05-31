@@ -34,12 +34,14 @@ app.get('/api/health', (c) => {
 });
 
 // For local development with Bun
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && typeof Bun !== 'undefined') {
   Bun.serve({
     port: process.env.API_PORT ?? 3000,
     fetch: app.fetch,
   });
 }
 
-// Export for Vercel
-export default app;
+// Export for Cloudflare Workers and Vercel
+export default {
+  fetch: app.fetch,
+};

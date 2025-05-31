@@ -1,0 +1,27 @@
+name = "akp-used-phone-api"
+main = "../../dist/apps/api/main-workers.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat", "nodejs_als"]
+
+[env.production]
+name = "akp-used-phone-api"
+
+[env.staging]
+name = "akp-used-phone-api-staging"
+
+# Environment variables (set these in Cloudflare dashboard or via wrangler secret)
+# DATABASE_URL
+# BETTER_AUTH_SECRET
+# BETTER_AUTH_URL
+# FRONTEND_URL
+
+# KV namespaces (if needed)
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "your-kv-namespace-id"
+
+# D1 database (if using Cloudflare D1)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "akp-used-phone-db"
+# database_id = "your-database-id"

@@ -5,7 +5,7 @@ import {
   updateUserSchema,
   userQuerySchema,
 } from './users-schema';
-import { hashPassword, publicProcedure } from '@/shared/api/utils';
+import { publicProcedure } from '@/shared/api/utils';
 
 export const usersService = {
   getAll: publicProcedure
@@ -29,10 +29,8 @@ export const usersService = {
   create: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
-      const password = await hashPassword(input.password);
       return await usersRepository(ctx.prisma).create({
         ...input,
-        password,
       });
     }),
 

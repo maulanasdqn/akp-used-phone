@@ -33,3 +33,5 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 generated
+
+.wrangler

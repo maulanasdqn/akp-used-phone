@@ -27,6 +27,29 @@
       "options": {
         "lintFilePatterns": ["apps/api/**/*.{ts,tsx,js,jsx}"]
       }
+    },
+    "build:workers": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc src/main-workers.ts --outDir ../../dist/apps/api --module es2022 --target es2022 --moduleResolution node --skipLibCheck",
+        "cwd": "apps/api"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy",
+        "cwd": "apps/api"
+      },
+      "dependsOn": ["build", "build:workers"]
+    },
+    "deploy:staging": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wrangler deploy --env staging",
+        "cwd": "apps/api"
+      },
+      "dependsOn": ["build"]
     }
   }
 }
