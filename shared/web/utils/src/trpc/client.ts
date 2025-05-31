@@ -8,8 +8,7 @@ export const trpc = createTRPCReact<AppRouter>();
 export const trpcLinks = {
   links: [
     httpBatchLink({
-      url:
-        import.meta?.env?.['VITE_API_URL'] ?? 'http://localhost:3000/v1/trpc',
+      url: 'https://api.used.msdqn.dev/v1/trpc',
       headers() {
         return {
           'x-trpc-source': 'react',
