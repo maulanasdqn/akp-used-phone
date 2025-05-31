@@ -8,7 +8,7 @@ import {
   CardTitle,
   Button,
   Badge,
-} from '@/shared/web/components/ui';
+} from '@/shared/web/components';
 
 export function Component() {
   const [searchQuery, setSearchQuery] = useState('');

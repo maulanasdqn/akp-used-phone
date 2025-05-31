@@ -1,0 +1,73 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: akp-postgres
+    environment:
+      POSTGRES_DB: akp_used_phone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - akp-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: akp-api
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/akp_used_phone
+      - BETTER_AUTH_URL=http://localhost:3000
+      - BETTER_AUTH_SECRET=your-secret-key-here-change-in-production
+      - API_PORT=3000
+      - FRONTEND_URL=http://localhost:8080
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - akp-network
+    restart: unless-stopped
+
+  # Store Frontend
+  store:
+    build:
+      context: .
+      dockerfile: apps/store/Dockerfile
+    container_name: akp-store
+    ports:
+      - '8080:80'
+    networks:
+      - akp-network
+    restart: unless-stopped
+
+  # Backoffice Frontend
+  backoffice:
+    build:
+      context: .
+      dockerfile: apps/backoffice/Dockerfile
+    container_name: akp-backoffice
+    ports:
+      - '8081:80'
+    networks:
+      - akp-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  akp-network:
+    driver: bridge

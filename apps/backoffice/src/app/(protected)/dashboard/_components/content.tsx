@@ -1,27 +1,22 @@
 import {
   Card,
+  Progress,
   CardContent,
+  Button,
   CardDescription,
+  Badge,
   CardHeader,
   CardTitle,
-} from '@/shared/web/components/ui/card';
-import { Badge } from '@/shared/web/components/ui/badge';
-import { Button } from '@/shared/web/components/ui/button';
-import { Progress } from '@/shared/web/components/ui/progress';
-import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/shared/web/components/ui/avatar';
-
-import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/shared/web/components/ui/table';
+} from '@/shared/web/components';
 import {
   ArrowUpRight,
   ArrowDownRight,

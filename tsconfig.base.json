@@ -16,7 +16,7 @@
       "@/shared/api/database": ["shared/api/database/src/index.ts"],
       "@/shared/api/utils": ["shared/api/utils/src/index.ts"],
       "@/shared/trpc": ["shared/trpc/src/index.ts"],
-      "@/shared/web/components/*": ["shared/web/components/src/*"],
+      "@/shared/web/components": ["shared/web/components/src/index.ts"],
       "@/shared/web/utils": ["shared/web/utils/src/index.ts"]
     },
     "types": ["bun-types"]

@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/web/components/ui';
+} from '@/shared/web/components';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';

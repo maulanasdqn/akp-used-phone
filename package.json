@@ -18,6 +18,8 @@
     "backoffice:dev": "nx dev backoffice",
     "backoffice:build": "nx dev backoffice",
     "backoffice:prod": "nx preview backoffice",
+    "components:build": "nx build components",
+    "utils:build": "nx build utils",
     "db:pull": "nx run prisma:pull",
     "db:push": "nx run prisma:push",
     "db:migrate": "nx run prisma:migrate",

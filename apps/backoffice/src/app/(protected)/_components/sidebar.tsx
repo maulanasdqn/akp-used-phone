@@ -23,7 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/shared/web/components/ui/sidebar';
+} from '@/shared/web/components';
 import { Link } from 'react-router';
 
 const data = {

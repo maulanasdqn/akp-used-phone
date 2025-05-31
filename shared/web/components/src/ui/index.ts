@@ -16,3 +16,7 @@ export * from './tooltip';
 export * from './label';
 export * from './checkbox';
 export * from './form';
+export * from './separator';
+export * from './table';
+export * from './progress';
+export * from './card';

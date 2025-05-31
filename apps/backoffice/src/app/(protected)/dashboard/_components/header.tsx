@@ -1,18 +1,16 @@
-'use client';
-
-import { Bell, Search } from 'lucide-react';
-import { Button } from '@/shared/web/components/ui/button';
-import { Input } from '@/shared/web/components/ui/input';
-import { SidebarTrigger } from '@/shared/web/components/ui/sidebar';
-import { Separator } from '@/shared/web/components/ui/separator';
 import {
+  Button,
+  Input,
+  SidebarTrigger,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/shared/web/components/ui/breadcrumb';
+  Separator,
+} from '@/shared/web/components';
+import { Bell, Search } from 'lucide-react';
 
 export function DashboardHeader() {
   return (
