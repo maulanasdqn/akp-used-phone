@@ -10,9 +10,13 @@ import {
   BreadcrumbSeparator,
   Separator,
 } from '@/shared/web/components';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, Plus } from 'lucide-react';
 
-export function DashboardHeader() {
+interface ProductsHeaderProps {
+  onAddProduct?: () => void;
+}
+
+export function ProductsHeader({ onAddProduct }: ProductsHeaderProps) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
       <SidebarTrigger className="-ml-1" />
@@ -20,11 +24,11 @@ export function DashboardHeader() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="#">Used Phone Store</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard">Used Phone Store</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
-            <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            <BreadcrumbPage>Products</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -33,10 +37,14 @@ export function DashboardHeader() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search phones, brands, models..."
+            placeholder="Search products..."
             className="w-[300px] pl-8"
           />
         </div>
+        <Button onClick={onAddProduct} size="sm">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Product
+        </Button>
         <Button variant="ghost" size="icon">
           <Bell className="h-4 w-4" />
           <span className="sr-only">Notifications</span>

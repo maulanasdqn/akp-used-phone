@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://akp-used-phone-api.maulanasdqn.workers.dev/$1"
+      "dest": "http://8.215.18.93:3003/api/$1"
     },
     {
       "src": "/[^.]+",

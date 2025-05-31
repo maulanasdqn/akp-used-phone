@@ -24,6 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { userLoginSchema } from '@/shared/api/app/v1/iam/users/users-schema';
 import { authClient } from '../../../../auth';
 import z from 'zod';
+import { toast } from 'sonner';
 
 export default function Component() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,12 +37,19 @@ export default function Component() {
   const { signIn } = authClient;
 
   const onSubmit = form.handleSubmit(async (data) => {
-    await signIn.email({
-      email: data.email,
-      password: data.password,
-      callbackURL: '/dashboard',
-      rememberMe: true,
-    });
+    await signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+        callbackURL: '/dashboard',
+        rememberMe: true,
+      },
+      {
+        onError: (error) => {
+          toast.error(error?.error?.message);
+        },
+      }
+    );
   });
 
   return (

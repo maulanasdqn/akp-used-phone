@@ -16,6 +16,12 @@ export const trpcLinks = {
         };
       },
       transformer: SuperJSON,
+      fetch(url, options) {
+        return fetch(url, {
+          ...options,
+          credentials: 'include',
+        });
+      },
     }),
     loggerLink({
       enabled: (op) =>

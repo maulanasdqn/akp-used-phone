@@ -6,14 +6,14 @@ import { auth } from '@/shared/api/utils';
 
 const app = new Hono();
 
-// Apply CORS middleware first to handle preflight requests
 app.use(
   '*',
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
-        : 'http://localhost:5174',
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'https://akp-used-phone.vercel.app',
+    ],
     allowHeaders: ['Content-Type', 'Authorization', 'Cookie', 'x-trpc-source'],
     allowMethods: ['POST', 'GET', 'OPTIONS'],
     exposeHeaders: ['Content-Length', 'Set-Cookie'],
@@ -28,12 +28,10 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => auth.handler(c.req.raw));
 
 app.use('/v1/trpc/*', trpcMiddleware());
 
-// Health check endpoint
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// For local development with Bun
 if (process.env.NODE_ENV !== 'production' && typeof Bun !== 'undefined') {
   Bun.serve({
     port: process.env.API_PORT ?? 3000,
@@ -41,7 +39,6 @@ if (process.env.NODE_ENV !== 'production' && typeof Bun !== 'undefined') {
   });
 }
 
-// Export for Cloudflare Workers and Vercel
 export default {
   fetch: app.fetch,
 };

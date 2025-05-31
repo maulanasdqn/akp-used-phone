@@ -1,14 +1,13 @@
 import {
   BarChart3,
-  Calendar,
   Home,
-  Inbox,
-  Search,
-  Settings,
+  Smartphone,
+  Package,
   Users,
-  FileText,
+  Settings,
+  ShoppingCart,
   TrendingUp,
-  CreditCard,
+  AlertTriangle,
 } from 'lucide-react';
 
 import {
@@ -33,63 +32,68 @@ const data = {
       items: [
         {
           title: 'Dashboard',
-          url: '#',
+          url: '/dashboard',
           icon: Home,
           isActive: true,
         },
         {
           title: 'Analytics',
-          url: '#',
+          url: '/analytics',
           icon: BarChart3,
         },
         {
           title: 'Reports',
-          url: '#',
-          icon: FileText,
+          url: '/reports',
+          icon: TrendingUp,
         },
       ],
     },
     {
-      title: 'Management',
+      title: 'Inventory',
+      items: [
+        {
+          title: 'Products',
+          url: '/products',
+          icon: Smartphone,
+        },
+        {
+          title: 'Stock Management',
+          url: '/stock',
+          icon: Package,
+        },
+        {
+          title: 'Low Stock Alert',
+          url: '/low-stock',
+          icon: AlertTriangle,
+        },
+      ],
+    },
+    {
+      title: 'Sales',
+      items: [
+        {
+          title: 'Orders',
+          url: '/orders',
+          icon: ShoppingCart,
+        },
+        {
+          title: 'Customers',
+          url: '/customers',
+          icon: Users,
+        },
+      ],
+    },
+    {
+      title: 'System',
       items: [
         {
           title: 'Users',
-          url: '#',
+          url: '/users',
           icon: Users,
         },
         {
-          title: 'Calendar',
-          url: '#',
-          icon: Calendar,
-        },
-        {
-          title: 'Messages',
-          url: '#',
-          icon: Inbox,
-        },
-        {
-          title: 'Billing',
-          url: '#',
-          icon: CreditCard,
-        },
-      ],
-    },
-    {
-      title: 'Tools',
-      items: [
-        {
-          title: 'Search',
-          url: '#',
-          icon: Search,
-        },
-        {
-          title: 'Performance',
-          url: '#',
-          icon: TrendingUp,
-        },
-        {
           title: 'Settings',
-          url: '#',
+          url: '/settings',
           icon: Settings,
         },
       ],
@@ -104,13 +108,15 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link to="#">
+              <Link to="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <BarChart3 className="size-4" />
+                  <Smartphone className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Dashboard</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-semibold">
+                    Used Phone Store
+                  </span>
+                  <span className="truncate text-xs">Admin Panel</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -126,10 +132,10 @@ export function AppSidebar() {
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url}>
+                      <Link to={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -143,11 +149,11 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <span className="text-xs font-semibold">JD</span>
+                <span className="text-xs font-semibold">AD</span>
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">John Doe</span>
-                <span className="truncate text-xs">john@example.com</span>
+                <span className="truncate font-semibold">Admin</span>
+                <span className="truncate text-xs">admin@usedphones.com</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

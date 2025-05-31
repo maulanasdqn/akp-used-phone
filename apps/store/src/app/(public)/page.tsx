@@ -1,277 +1,411 @@
-import { useState } from 'react';
-import { trpc } from '@/shared/web/utils';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
   Button,
-  Badge,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Input,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
 } from '@/shared/web/components';
+import { useState, useCallback } from 'react';
+import { Search, Filter, X } from 'lucide-react';
+import { FilterSidebar } from './_components/filter-sidebar';
+import { ProductCard } from './_components/product-card';
+import { Header } from './_components/header';
+import { trpc, useDebounce } from '@/shared/web/utils';
 
-export function Component() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<'createdAt' | 'name' | 'price'>(
-    'createdAt'
-  );
+export const Component = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<
+    'createdAt' | 'updatedAt' | 'name' | 'price' | 'stockQuantity'
+  >('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [page, setPage] = useState(1);
+  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number | undefined>();
+  const [inStock, setInStock] = useState<boolean | undefined>();
+  const [showFilters, setShowFilters] = useState(false);
 
-  const productsQuery = trpc.products.getAll.useQuery({
-    page: currentPage,
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const {
+    data: productsData,
+    isLoading,
+    error,
+  } = trpc.products.getAll.useQuery({
+    page,
     limit: 12,
-    search: searchQuery || undefined,
+    search: debouncedSearchTerm || undefined,
     sortBy,
     sortOrder,
+    minPrice,
+    maxPrice,
+    inStock,
   });
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(price);
-  };
+  const products = productsData?.data ?? [];
+  const totalItems = productsData?.meta?.total ?? 0;
+  const perPage = productsData?.meta?.perPage ?? 12;
+  const totalPages = Math.ceil(totalItems / perPage);
 
-  const getStockBadge = (stockQuantity: number) => {
-    if (stockQuantity === 0) {
-      return <Badge variant="destructive">Out of Stock</Badge>;
-    } else if (stockQuantity <= 10) {
-      return <Badge variant="warning">Low Stock</Badge>;
-    } else {
-      return <Badge variant="success">In Stock</Badge>;
+  const handleSortChange = useCallback((value: string) => {
+    switch (value) {
+      case 'price-low':
+        setSortBy('price');
+        setSortOrder('asc');
+        break;
+      case 'price-high':
+        setSortBy('price');
+        setSortOrder('desc');
+        break;
+      case 'name':
+        setSortBy('name');
+        setSortOrder('asc');
+        break;
+      case 'newest':
+        setSortBy('createdAt');
+        setSortOrder('desc');
+        break;
+      case 'stock':
+        setSortBy('stockQuantity');
+        setSortOrder('desc');
+        break;
+      default:
+        setSortBy('createdAt');
+        setSortOrder('desc');
     }
+    setPage(1);
+  }, []);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handlePriceFilter = useCallback((min?: number, max?: number) => {
+    setMinPrice(min);
+    setMaxPrice(max);
+    setPage(1);
+  }, []);
+
+  const handleStockFilter = useCallback((stockFilter?: boolean) => {
+    setInStock(stockFilter);
+    setPage(1);
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setSearchTerm('');
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
+    setInStock(undefined);
+    setSortBy('createdAt');
+    setSortOrder('desc');
+    setPage(1);
+  }, []);
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={page === i}
+              className="cursor-pointer"
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            onClick={() => handlePageChange(1)}
+            isActive={page === 1}
+            className="cursor-pointer"
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      if (page > 3) {
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      const start = Math.max(2, page - 1);
+      const end = Math.min(totalPages - 1, page + 1);
+
+      for (let i = start; i <= end; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={page === i}
+              className="cursor-pointer"
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      if (page < totalPages - 2) {
+        items.push(
+          <PaginationItem key="ellipsis2">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      if (totalPages > 1) {
+        items.push(
+          <PaginationItem key={totalPages}>
+            <PaginationLink
+              onClick={() => handlePageChange(totalPages)}
+              isActive={page === totalPages}
+              className="cursor-pointer"
+            >
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    }
+
+    return items;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="bg-white dark:bg-slate-900 shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Product Catalog
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Discover our premium collection of used phones with guaranteed
-              quality and competitive prices
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Find Your Perfect Used Phone
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+            Discover amazing deals on certified pre-owned smartphones. All
+            devices are thoroughly tested and come with our quality guarantee.
+          </p>
+        </div>
+
+        {/* Search Bar - Mobile Optimized */}
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="relative w-full max-w-lg">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search for phones..."
+              className="pl-10 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    className="h-5 w-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden">
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full mb-4 flex items-center justify-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </Button>
+          </div>
+
+          {/* Sidebar - Responsive */}
+          <aside
+            className={`
+            lg:w-64 lg:flex-shrink-0
+            ${showFilters ? 'block' : 'hidden lg:block'}
+          `}
+          >
+            <div className="lg:sticky lg:top-24">
+              <FilterSidebar
+                onPriceChange={handlePriceFilter}
+                onStockChange={handleStockFilter}
+                onClearFilters={clearFilters}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                inStock={inStock}
+              />
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Results Header - Mobile Optimized */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+              <p className="text-sm sm:text-base text-gray-600 order-2 sm:order-1">
+                {isLoading
+                  ? 'Loading...'
+                  : `Showing ${products.length} of ${totalItems} results`}
+                <span className="hidden sm:inline">
+                  {` (Page ${page} of ${totalPages})`}
+                </span>
+              </p>
+              <div className="flex items-center space-x-4 order-1 sm:order-2">
+                <Select
+                  value={`${sortBy}-${sortOrder}`}
+                  onValueChange={handleSortChange}
+                >
+                  <SelectTrigger className="w-full sm:w-48">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="createdAt-desc">Newest First</SelectItem>
+                    <SelectItem value="price-asc">
+                      Price: Low to High
+                    </SelectItem>
+                    <SelectItem value="price-desc">
+                      Price: High to Low
+                    </SelectItem>
+                    <SelectItem value="name-asc">Name A-Z</SelectItem>
+                    <SelectItem value="stock-desc">
+                      Stock: High to Low
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as 'createdAt' | 'name' | 'price')
-                }
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white"
-              >
-                <option value="createdAt">Sort by Date</option>
-                <option value="name">Sort by Name</option>
-                <option value="price">Sort by Price</option>
-              </select>
-              <button
-                onClick={() =>
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-                }
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 dark:bg-slate-700 dark:text-white"
-              >
-                {sortOrder === 'asc' ? '↑' : '↓'}
-              </button>
-            </div>
-          </div>
-        </div>
+            {/* Error State */}
+            {error && (
+              <div className="text-center py-8">
+                <p className="text-red-600">
+                  Error loading products. Please try again.
+                </p>
+              </div>
+            )}
 
-        {productsQuery.isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader>
-                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : productsQuery.error ? (
-          <div className="text-center py-12">
-            <div className="text-red-500 text-lg mb-4">
-              Error loading products
-            </div>
-            <Button onClick={() => productsQuery.refetch()}>Try Again</Button>
-          </div>
-        ) : !productsQuery.data || 'message' in productsQuery.data ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500 text-lg">No products found</div>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {productsQuery.data.data.map((product) => (
-                <Card
-                  key={product.id}
-                  className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white dark:bg-slate-800 border-0 shadow-md"
-                >
-                  <CardHeader className="p-0">
-                    <div className="relative overflow-hidden rounded-t-xl">
-                      <img
-                        src={
-                          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop'
-                        }
-                        alt={product.name}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-3 right-3">
-                        {getStockBadge(product.stockQuantity)}
-                      </div>
-                      {product.stockQuantity <= 10 &&
-                        product.stockQuantity > 0 && (
-                          <div className="absolute top-3 left-3">
-                            <Badge variant="warning">
-                              Only {product.stockQuantity} left
-                            </Badge>
-                          </div>
-                        )}
-                    </div>
-                  </CardHeader>
+            {/* Empty State */}
+            {!isLoading && !error && products.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">
+                  No products found. Try adjusting your search or filters.
+                </p>
+              </div>
+            )}
 
-                  <CardContent className="p-4">
-                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                      {product.name}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {formatPrice(product.price)}
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        SKU: {product.sku}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span>Min. Order: {product.minimumOrderQuantity}</span>
-                      <span>Stock: {product.stockQuantity}</span>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="p-4 pt-0">
-                    <div className="flex gap-2 w-full">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        disabled={product.stockQuantity === 0}
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1"
-                        disabled={product.stockQuantity === 0}
-                      >
-                        {product.stockQuantity === 0
-                          ? 'Out of Stock'
-                          : 'Add to Cart'}
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
+            {/* Product Grid - Responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {products.map((product) => (
+                <ProductCard key={product.id} {...product} />
               ))}
             </div>
 
-            {productsQuery.data.meta && (
-              <div className="flex justify-center items-center gap-2 mt-8">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
+            {/* Pagination - Mobile Optimized */}
+            {!isLoading && totalPages > 1 && (
+              <div className="mt-8 sm:mt-12">
+                <Pagination>
+                  <PaginationContent className="flex-wrap justify-center">
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => handlePageChange(Math.max(1, page - 1))}
+                        className={`cursor-pointer ${
+                          page === 1 ? 'pointer-events-none opacity-50' : ''
+                        }`}
+                      />
+                    </PaginationItem>
 
-                <div className="flex items-center gap-2">
-                  {Array.from(
-                    {
-                      length: Math.min(5, productsQuery.data.meta.total),
-                    },
-                    (_, i) => {
-                      const page = i + 1;
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    }
-                  )}
-                </div>
+                    <div className="hidden sm:contents">
+                      {renderPaginationItems()}
+                    </div>
 
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    setCurrentPage(
-                      Math.min(productsQuery.data.meta.total, currentPage + 1)
-                    )
-                  }
-                  disabled={currentPage === productsQuery.data.meta.total}
-                >
-                  Next
-                </Button>
+                    {/* Mobile pagination - simplified */}
+                    <div className="sm:hidden flex items-center gap-2">
+                      <span className="text-sm text-gray-600">
+                        Page {page} of {totalPages}
+                      </span>
+                    </div>
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() =>
+                          handlePageChange(Math.min(totalPages, page + 1))
+                        }
+                        className={`cursor-pointer ${
+                          page === totalPages
+                            ? 'pointer-events-none opacity-50'
+                            : ''
+                        }`}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             )}
+          </div>
+        </div>
+      </main>
 
-            {productsQuery.data.meta && (
-              <div className="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {(currentPage - 1) * 12 + 1} to{' '}
-                {Math.min(currentPage * 12, productsQuery.data.meta.total)} of{' '}
-                {productsQuery.data.meta.total} products
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* Footer - Responsive */}
+      <footer className="bg-white border-t border-gray-200 mt-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="sm:col-span-2 lg:col-span-1">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                PhoneMarket
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Your trusted marketplace for quality used smartphones.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-4">Shop</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>All Phones</li>
+                <li>iPhone</li>
+                <li>Android</li>
+                <li>Accessories</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>Help Center</li>
+                <li>Returns</li>
+                <li>Warranty</li>
+                <li>Contact Us</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>About Us</li>
+                <li>Careers</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-600">
+            © 2025 PhoneMarket. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
-}
+};
 
 export default Component;

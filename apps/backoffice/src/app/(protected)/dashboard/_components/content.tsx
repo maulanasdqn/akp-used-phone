@@ -20,107 +20,130 @@ import {
 import {
   ArrowUpRight,
   ArrowDownRight,
-  Users,
+  Smartphone,
   CreditCard,
-  Activity,
+  Package,
   DollarSign,
   TrendingUp,
   MoreHorizontal,
+  AlertTriangle,
+  Star,
 } from 'lucide-react';
 
 const stats = [
   {
     title: 'Total Revenue',
-    value: '$45,231.89',
-    change: '+20.1%',
+    value: 'Rp 125,450,000',
+    change: '+15.2%',
     trend: 'up',
     icon: DollarSign,
   },
   {
-    title: 'Subscriptions',
-    value: '+2350',
-    change: '+180.1%',
-    trend: 'up',
-    icon: Users,
-  },
-  {
-    title: 'Sales',
-    value: '+12,234',
-    change: '+19%',
+    title: 'Phones Sold',
+    value: '342',
+    change: '+23.1%',
     trend: 'up',
     icon: CreditCard,
   },
   {
-    title: 'Active Now',
-    value: '+573',
-    change: '+201',
+    title: 'Active Listings',
+    value: '1,247',
+    change: '+8.5%',
     trend: 'up',
-    icon: Activity,
+    icon: Package,
+  },
+  {
+    title: 'Low Stock Items',
+    value: '18',
+    change: '-12%',
+    trend: 'down',
+    icon: AlertTriangle,
   },
 ];
 
 const recentSales = [
   {
-    name: 'Olivia Martin',
-    email: 'olivia.martin@email.com',
-    amount: '+$1,999.00',
+    name: 'iPhone 14 Pro Max',
+    customer: 'Ahmad Rizki',
+    amount: 'Rp 12,500,000',
+    condition: 'Excellent',
     avatar: '/placeholder.svg?height=32&width=32',
-    initials: 'OM',
+    initials: 'IP',
   },
   {
-    name: 'Jackson Lee',
-    email: 'jackson.lee@email.com',
-    amount: '+$39.00',
+    name: 'Samsung Galaxy S23',
+    customer: 'Siti Nurhaliza',
+    amount: 'Rp 8,750,000',
+    condition: 'Very Good',
     avatar: '/placeholder.svg?height=32&width=32',
-    initials: 'JL',
+    initials: 'SG',
   },
   {
-    name: 'Isabella Nguyen',
-    email: 'isabella.nguyen@email.com',
-    amount: '+$299.00',
+    name: 'iPhone 13 Mini',
+    customer: 'Budi Santoso',
+    amount: 'Rp 7,200,000',
+    condition: 'Good',
     avatar: '/placeholder.svg?height=32&width=32',
-    initials: 'IN',
+    initials: 'IP',
   },
   {
-    name: 'William Kim',
-    email: 'will@email.com',
-    amount: '+$99.00',
+    name: 'Xiaomi 13 Pro',
+    customer: 'Maya Sari',
+    amount: 'Rp 6,500,000',
+    condition: 'Excellent',
     avatar: '/placeholder.svg?height=32&width=32',
-    initials: 'WK',
+    initials: 'XI',
   },
   {
-    name: 'Sofia Davis',
-    email: 'sofia.davis@email.com',
-    amount: '+$39.00',
+    name: 'OnePlus 11',
+    customer: 'Dedi Kurniawan',
+    amount: 'Rp 5,800,000',
+    condition: 'Very Good',
     avatar: '/placeholder.svg?height=32&width=32',
-    initials: 'SD',
+    initials: 'OP',
   },
 ];
 
-const projects = [
+const inventory = [
   {
-    name: 'Website Redesign',
-    status: 'In Progress',
-    progress: 75,
-    dueDate: 'Dec 15, 2024',
+    brand: 'iPhone',
+    model: '14 Pro Max',
+    condition: 'Excellent',
+    stock: 12,
+    price: 'Rp 12,500,000',
+    status: 'In Stock',
   },
   {
-    name: 'Mobile App',
-    status: 'Planning',
-    progress: 25,
-    dueDate: 'Jan 30, 2025',
+    brand: 'Samsung',
+    model: 'Galaxy S23 Ultra',
+    condition: 'Very Good',
+    stock: 8,
+    price: 'Rp 9,200,000',
+    status: 'In Stock',
   },
   {
-    name: 'API Integration',
-    status: 'Completed',
-    progress: 100,
-    dueDate: 'Nov 20, 2024',
+    brand: 'iPhone',
+    model: '13 Pro',
+    condition: 'Good',
+    stock: 3,
+    price: 'Rp 8,500,000',
+    status: 'Low Stock',
   },
   {
-    name: 'Database Migration',
-    status: 'In Progress',
-    progress: 60,
-    dueDate: 'Dec 10, 2024',
+    brand: 'Google',
+    model: 'Pixel 7 Pro',
+    condition: 'Excellent',
+    stock: 0,
+    price: 'Rp 7,800,000',
+    status: 'Out of Stock',
+  },
+  {
+    brand: 'Xiaomi',
+    model: '13 Pro',
+    condition: 'Very Good',
+    stock: 15,
+    price: 'Rp 6,500,000',
+    status: 'In Stock',
   },
 ];
 
@@ -161,14 +184,17 @@ export function DashboardContent() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
+            <CardTitle>Sales Overview</CardTitle>
+            <CardDescription>
+              Monthly sales performance and trends
+            </CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
               <div className="text-center">
                 <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>Chart visualization would go here</p>
-                <p className="text-sm">Revenue trends over time</p>
+                <p>Sales chart visualization would go here</p>
+                <p className="text-sm">Revenue and units sold over time</p>
               </div>
             </div>
           </CardContent>
@@ -177,16 +203,16 @@ export function DashboardContent() {
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Recent Sales</CardTitle>
-            <CardDescription>You made 265 sales this month.</CardDescription>
+            <CardDescription>Latest phone sales this week.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
-              {recentSales.map((sale) => (
-                <div key={sale.email} className="flex items-center">
+              {recentSales.map((sale, index) => (
+                <div key={index} className="flex items-center">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
                       src={sale.avatar || '/placeholder.svg'}
-                      alt="Avatar"
+                      alt="Phone"
                     />
                     <AvatarFallback>{sale.initials}</AvatarFallback>
                   </Avatar>
@@ -195,7 +221,7 @@ export function DashboardContent() {
                       {sale.name}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {sale.email}
+                      {sale.customer} • {sale.condition}
                     </p>
                   </div>
                   <div className="ml-auto font-medium">{sale.amount}</div>
@@ -209,52 +235,79 @@ export function DashboardContent() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Projects</CardTitle>
+            <CardTitle>Inventory Status</CardTitle>
             <CardDescription>
-              Manage your ongoing projects and their progress.
+              Current stock levels and pricing for used phones.
             </CardDescription>
           </div>
           <Button variant="outline" size="sm">
-            View All
+            <Smartphone className="h-4 w-4 mr-2" />
+            Add Phone
           </Button>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
+                <TableHead>Brand & Model</TableHead>
+                <TableHead>Condition</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Price</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Progress</TableHead>
-                <TableHead>Due Date</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projects.map((project) => (
-                <TableRow key={project.name}>
-                  <TableCell className="font-medium">{project.name}</TableCell>
+              {inventory.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      <Smartphone className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <div className="font-medium">{item.brand}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {item.model}
+                        </div>
+                      </div>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={
-                        project.status === 'Completed'
+                        item.condition === 'Excellent'
                           ? 'default'
-                          : project.status === 'In Progress'
+                          : item.condition === 'Very Good'
                           ? 'secondary'
                           : 'outline'
                       }
                     >
-                      {project.status}
+                      <Star className="h-3 w-3 mr-1" />
+                      {item.condition}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Progress value={project.progress} className="w-[60px]" />
-                      <span className="text-sm text-muted-foreground">
-                        {project.progress}%
-                      </span>
-                    </div>
+                    <span
+                      className={
+                        item.stock <= 3 ? 'text-orange-600 font-medium' : ''
+                      }
+                    >
+                      {item.stock} units
+                    </span>
                   </TableCell>
-                  <TableCell>{project.dueDate}</TableCell>
+                  <TableCell className="font-medium">{item.price}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        item.status === 'In Stock'
+                          ? 'default'
+                          : item.status === 'Low Stock'
+                          ? 'secondary'
+                          : 'destructive'
+                      }
+                    >
+                      {item.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="h-4 w-4" />

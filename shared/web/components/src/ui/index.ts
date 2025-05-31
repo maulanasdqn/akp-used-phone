@@ -20,3 +20,7 @@ export * from './separator';
 export * from './table';
 export * from './progress';
 export * from './card';
+export * from './slider';
+export * from './select';
+export * from './dialog';
+export * from './textarea';
