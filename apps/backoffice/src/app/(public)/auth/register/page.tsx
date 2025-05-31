@@ -19,11 +19,12 @@ import {
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userRegistrationSchema } from '@/shared/api/app/v1/iam/users/users-schema';
 import { authClient } from '../../../../auth';
 import z from 'zod';
+import { toast } from 'sonner';
 
 export default function Component() {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,14 +36,26 @@ export default function Component() {
 
   const { signUp } = authClient;
 
+  const navigate = useNavigate();
+
   const onSubmit = form.handleSubmit(async (data) => {
-    console.log(data);
-    await signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      image: 'https://svgsilh.com/svg_v2/659651.svg',
-    });
+    await signUp.email(
+      {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        image: 'https://svgsilh.com/svg_v2/659651.svg',
+      },
+      {
+        onSuccess: () => {
+          toast.success('Register Successfully');
+          navigate('/auth/login');
+        },
+        onError: (error) => {
+          toast.error(error?.error?.message);
+        },
+      }
+    );
   });
 
   return (

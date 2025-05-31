@@ -122,3 +122,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+.toast-success {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  background-color: #e9f8f4 !important;
+  color: #26bf94 !important;
+}
+
+.toast-error {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  background-color: #fcedeb !important;
+  color: #e6533c !important;
+}

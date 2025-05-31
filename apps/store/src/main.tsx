@@ -36,7 +36,21 @@ if (!rootElement) throw new Error('Failed to find the root element');
 createRoot(rootElement).render(
   <StrictMode>
     <TRPCProvider>
-      <Toaster position="top-right" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            borderRadius: '8px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          classNames: {
+            success: 'toast-success',
+            error: 'toast-error',
+          },
+        }}
+      />
       <RouterProvider router={router} />
     </TRPCProvider>
   </StrictMode>
