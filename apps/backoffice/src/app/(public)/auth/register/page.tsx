@@ -21,7 +21,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { userRegistrationSchema } from '@/shared/api/app/v1/iam/users/users-schema';
+import { userRegistrationSchema } from '@/shared/api/app/client';
 import { authClient } from '../../../../auth';
 import z from 'zod';
 import { toast } from 'sonner';

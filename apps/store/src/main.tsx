@@ -6,7 +6,6 @@ import {
   add404PageToRoutesChildren,
   addErrorElementToRoutes,
   convertPagesToRoute,
-  QueryProvider,
   TRPCProvider,
 } from '@/shared/web/utils';
 import { Toaster } from 'sonner';

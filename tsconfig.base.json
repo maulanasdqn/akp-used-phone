@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@/shared/api/app": ["shared/api/app/src/index.ts"],
-      "@/shared/api/app/*": ["shared/api/app/src/*"],
+      "@/shared/api/app/client": ["shared/api/app/src/client.ts"],
       "@/shared/api/database": ["shared/api/database/src/index.ts"],
       "@/shared/api/utils": ["shared/api/utils/src/index.ts"],
       "@/shared/trpc": ["shared/trpc/src/index.ts"],
